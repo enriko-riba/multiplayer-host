@@ -40,7 +40,7 @@
 
 
         /// <summary>
-        /// Swaps the read & write buffers.
+        /// Swaps the read and write buffers.
         /// </summary>
         public void SwapBuffers()
         {

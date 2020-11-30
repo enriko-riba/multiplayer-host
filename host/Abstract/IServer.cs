@@ -6,6 +6,9 @@
     using MultiplayerHost.Domain;
     using MultiplayerHost.Messages;
 
+    /// <summary>
+    /// Supports server operations. 
+    /// </summary>
     public interface IServer
     {
         /// <summary>
