@@ -3,7 +3,7 @@
 ![.NET Core](https://github.com/enriko-riba/multiplayer-host/workflows/.NET%20Core/badge.svg)
 
 ## Overview
-The multiplayer game server is a class library helping game developers implementing multiplayer game servers. The game developers haver to deal with 
+The multiplayer game server is a class library helping game developers implementing multiplayer game servers. The game developers still have to deal with game specific logic, client connections and state persistence but the game server provides structure and plumbing code to glue all components together.
 
 ### The multiplayer game server implements
 * abstract User class and user management
