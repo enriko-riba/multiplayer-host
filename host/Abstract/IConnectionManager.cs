@@ -4,17 +4,42 @@
     using System.Threading.Tasks;
     using MultiplayerHost.Messages;
 
+    /// <summary>
+    /// Contract for <see cref="IConnectionManager.PlayerDisconnected"/> event handler.
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
     public delegate void PlayerDisconnectedEventHandler(object sender, PlayerDisconnectedArgs e);
+
+    /// <summary>
+    /// Contract for <see cref="IConnectionManager.PlayerConnecting"/> event handler.
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
     public delegate void PlayerConnectingEventHandler(object sender, PlayerConnectingArgs e);
 
+    /// <summary>
+    /// PlayerDisconnected event argument.
+    /// </summary>
     public record PlayerDisconnectedArgs(int PlayerId);
+
+    /// <summary>
+    /// PlayerConnecting event argument.
+    /// </summary>
     public class PlayerConnectingArgs : EventArgs
     {
         public PlayerConnectingArgs(int playerId)
         {
             PlayerId = playerId;
         }
+        /// <summary>
+        /// Id of the player trying to connect.
+        /// </summary>
         public int PlayerId { get; init; }
+
+        /// <summary>
+        /// Cancels the player connection if set to true.
+        /// </summary>
         public bool Cancel { get; set; }
     }
 
