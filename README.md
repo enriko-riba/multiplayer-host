@@ -1,11 +1,11 @@
-# Generic .NET 5.0 based multiplayer game server
+# .NET 5 based multiplayer game server
 
 ![.NET Core](https://github.com/enriko-riba/multiplayer-host/workflows/.NET%20Core/badge.svg)
 
 ## Overview
+The multiplayer game server is a class library helping game developers implementing multiplayer game servers. The game developers haver to deal with 
 
 ### The multiplayer game server implements
- A class library implementing core server side operations like:
 * abstract User class and user management
 * main game loop
 * message dispatcher loop
@@ -28,7 +28,7 @@ The server cannot run as a stand-alone application, instead it is designed to be
 * in addition an **`IServer`** component is provided for the game implementors to support server operations
 
 ## Turn processing
-The server uses the ITurnProcessor interface to invoke game specific logic. The execution order is order:
+The server uses the `ITurnProcessor` interface to invoke game specific logic. The server invokes turn processors in the following order:
 1. `ITurnProcessor.ProcessClientMessage(User user, in ClientMessage message);` invoked for every received message 
 2. `ITurnProcessor.ProcessUserTurn(User user, int ellapsedMilliseconds);` invoked for every existing user (both online and offline)
 3. `ITurnProcessor.OnTurnComplete();`
