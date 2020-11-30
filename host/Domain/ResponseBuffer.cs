@@ -5,7 +5,7 @@
     using System.Threading;
 
     /// <summary>
-    /// Hanldes writing and reading server messages.
+    /// Handles writing and reading server messages.
     /// </summary>
     internal sealed class ResponseBuffer
     {

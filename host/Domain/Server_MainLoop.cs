@@ -14,7 +14,7 @@
     public partial class Server
     {
         /// <summary>
-        /// Main server loop, runs untill the stop request
+        /// Main server loop, runs until the stop request
         /// </summary>
         private async Task MainLoop()
         {
@@ -54,7 +54,7 @@
         private async Task ProcessAllUsers(int ellapsedMilliseconds)
         {
             //  enumerate users in a thread safe way
-            //  TODO: check if this is a bottleneck (refactor to linkedlist)
+            //  TODO: check if this is a bottleneck (refactor to linked list)
             var keys = users.Keys.ToArray();    
             foreach (var key in keys)
             {

@@ -15,7 +15,7 @@
 * public IServer api supporting basic server operations, enqueuing client messages and creating response messages
 
 ### The multiplayer game server does not implement
-* a real game - although a minimalistic reference game (server and client) is provided for test purpses
+* a real game - although a minimalistic reference game (server and client) is provided for test purposes
 * any kind of game specific logic
 * any kind of client connectivity
 * any kind of data storage
@@ -23,7 +23,7 @@
 ## Components
 The server cannot run as a stand-alone application, instead it is designed to be used with external components providing:
 * client connection management and message sending/receiving by implementing a **`IConnectionManager`** component
-* game persistance by implementing a **`IRepository`** component
+* game persistence by implementing a **`IRepository`** component
 * game logic by implementing a **`ITurnProcessor`** component
 * in addition an **`IServer`** component is provided for the game implementors to support server operations
 
@@ -46,4 +46,4 @@ context.Configure(repository, connMngr, turnProcessor);
 ```cs
 await server.Start();
 ```
-**Note**: The multiplayer game server is esiest to be used with a DI container. Consult the reference game server project how to setup DI in a console application.
+**Note**: The multiplayer game server is easiest to be used with a DI container. Consult the reference game server project how to setup DI in a console application.
