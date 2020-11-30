@@ -29,8 +29,8 @@ The server cannot run as a stand-alone application, instead it is designed to be
 
 ## Turn processing
 The server uses the ITurnProcessor interface to invoke game specific logic. The execution order is order:
-1. `ITurnProcessor.ProcessClientMessage(User user, in ClientMessage message);` - for every received message 
-2. `ITurnProcessor.ProcessUserTurn(User user, int ellapsedMilliseconds);` - for every existing user (both online and offline)
+1. `ITurnProcessor.ProcessClientMessage(User user, in ClientMessage message);` invoked for every received message 
+2. `ITurnProcessor.ProcessUserTurn(User user, int ellapsedMilliseconds);` invoked for every existing user (both online and offline)
 3. `ITurnProcessor.OnTurnComplete();`
 
 ## Quickstart
@@ -44,8 +44,8 @@ public class Player : User
     ...
 }
 ```
-2. implement the three mandatory interfaces: IConnectionManager, IRepository and ITurnProcessor. For testing a single can could implement all of them.
-When dealing with users inside your game logic, make sure to cast the provided User instance into your specific user entity class.
+2. implement the three mandatory interfaces: `IConnectionManager`, `IRepository` and `ITurnProcessor`. 
+Note: for testing purposes a single class could implement all of them. When dealing with users inside your game logic, make sure to cast the provided User instance into your specific user entity class.
 The server will only use the IRepository interface to save the user state. If you need to persist additional state you must implement it as part of your game logic.
 3. Implement client messages and corresponding parsers/handlers, define server messages and specify their payload format
 4. obtain an IServer reference, grab the context and provide the interface implementations
