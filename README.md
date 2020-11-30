@@ -26,3 +26,24 @@ The server cannot run as a stand-alone application, instead it is designed to be
 * game persistance by implementing a **`IRepository`** component
 * game logic by implementing a **`ITurnProcessor`** component
 * in addition an **`IServer`** component is provided for the game implementors to support server operations
+
+## Turn processing
+The server uses the ITurnProcessor interface to invoke game specific logic. The execution order is order:
+1. `ITurnProcessor.ProcessClientMessage(User user, in ClientMessage msg);` - for every received message 
+2. `ITurnProcessor.ProcessUserTurn(User user, int ellapsedMilliseconds);` - for every existing user (both online and offline)
+3. `ITurnProcessor.OnTurnComplete();`
+
+## Quickstart
+1. implement the three mandatory interfaces: IConnectionManager, IRepository and ITurnProcessor. For testing a single class could implement all of them.
+2. obtain an IServer reference, grab the context and provide the interface implementations
+```cs
+IServer server;
+var context = server.Context;
+context.Configure(repository, connMngr, turnProcessor);
+// optionally register on start event for initial game setup: context.Server.OnBeforeServerStart += OnServerStart;
+```
+3. start the server
+```cs
+await server.Start();
+```
+**Note**: The multiplayer game server is esiest to be used with a DI container. Consult the reference game server project how to setup DI in a console application.
