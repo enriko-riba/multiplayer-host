@@ -27,6 +27,7 @@ bld/
 [Oo]bj/
 [Ll]og/
 log.txt
+Host.xml
 
 # Visual Studio 2015/2017 cache/options directory
 .vs/
