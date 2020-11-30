@@ -8,7 +8,7 @@
     public partial class Server
     {
         /// <summary>
-        /// Messsage dispatching loop. Sends queued server messages to clients via ConnectionManager.
+        /// Message dispatching loop. Sends queued server messages to clients via <see cref="Abstract.IConnectionManager"/>.
         /// </summary>
         private async Task DispatcherLoop()
         {

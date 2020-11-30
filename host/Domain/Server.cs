@@ -157,7 +157,7 @@
         }
 
         /// <summary>
-        /// Enqueues the client mesage for server side processing.
+        /// Enqueues the client message for server side processing.
         /// </summary>
         /// <param name="message"></param>
         public void EnqueueClientMessage(in ClientMessage message)
