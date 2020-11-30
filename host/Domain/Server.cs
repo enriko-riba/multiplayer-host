@@ -26,6 +26,10 @@
 
         private readonly Dictionary<int, User> users = new();
 
+        /// <summary>
+        /// Creates a new Server instance.
+        /// </summary>
+        /// <param name="logger"></param>
         public Server(ILogger<Server> logger)
         {
             this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -38,6 +42,9 @@
         /// </summary>
         public event EventHandler OnBeforeServerStart;
 
+        /// <summary>
+        /// Returns the server context.
+        /// </summary>
         public ServerContext Context => context;
 
         /// <summary>
@@ -106,7 +113,7 @@
         /// <summary>
         /// Removes the user from the game.
         /// </summary>
-        /// <param name="userId"></param>
+        /// <param name="user"></param>
         public void RemoveUser(User user)
         {
             logger.WithMethodName().LogWarning("{@User}", user);

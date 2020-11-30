@@ -13,12 +13,21 @@
         /// </summary>
         public int Id { get; init; }
 
+        /// <summary>
+        /// Timestamp - users last save time.
+        /// </summary>
         [JsonIgnore]
-        public System.DateTime LastSaved { get; set; }
+        public DateTime LastSaved { get; set; }
         
+        /// <summary>
+        /// Dirty flag. Dirty users will be saved to a data storage implemented by IRepository.
+        /// </summary>
         [JsonIgnore]
         public bool IsDirty { get; set; }
         
+        /// <summary>
+        /// Timestamp - users last connect time.
+        /// </summary>
         [JsonIgnore]
         public DateTime? IsOnlineSince { get; internal set; }
     }

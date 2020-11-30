@@ -28,10 +28,15 @@
     /// </summary>
     public class PlayerConnectingArgs : EventArgs
     {
+        /// <summary>
+        /// Creates a new PlayerConnectingArgs instance.
+        /// </summary>
+        /// <param name="playerId"></param>
         public PlayerConnectingArgs(int playerId)
         {
             PlayerId = playerId;
         }
+
         /// <summary>
         /// Id of the player trying to connect.
         /// </summary>

@@ -27,9 +27,16 @@
         /// </summary>
         public string Data { get; init; }
 
+        /// <summary>
+        /// Defines how to use the <see cref="ServerMessage.Targets"/> user id's.
+        /// </summary>
         [JsonIgnore]
         public TargetKind TargetKind { get; init; }
 
+        /// <summary>
+        /// Array of user id's that are used to calculate the receivers of this message. 
+        /// The user id's are always used in the context of <see cref="ServerMessage.TargetKind"/>.
+        /// </summary>
         [JsonIgnore]
         public int[] Targets { get; init; }
     }
