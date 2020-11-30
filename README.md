@@ -9,7 +9,7 @@
 * abstract User class and user management
 * main game loop
 * message dispatcher loop
-* client message buffering (accepts incomming messages while  )
+* client message double buffering (accepts new incoming messages simultaneously with turn processing)
 * server message buffering
 * dedicated background threads for the main loop and message dispatcher
 * public IServer api supporting basic server operations, enqueuing client messages and creating response messages
