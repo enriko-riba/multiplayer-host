@@ -66,7 +66,7 @@
         User GetUserById(int id);
 
         /// <summary>
-        /// Stores an incomming client message to the processing queue.
+        /// Stores an incoming client message to the processing queue.
         /// </summary>
         /// <param name="message"></param>
         void EnqueueClientMessage(in ClientMessage message);
