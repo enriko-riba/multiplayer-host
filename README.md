@@ -1,9 +1,20 @@
-# .NET 5 based multiplayer game server
+# Multiplayer Host
+![project logo](host/images/image.png)
 
-![.NET Core](https://github.com/enriko-riba/multiplayer-host/workflows/.NET%20Core/badge.svg)
+![.NET 5](https://github.com/enriko-riba/multiplayer-host/workflows/.NET%20Core/badge.svg)
 
 ## Overview
-The multiplayer game server is a class library helping game developers implementing multiplayer game servers. The game developers still have to deal with game specific logic, client connections and state persistence but the game server provides structure and plumbing code to glue all components together.
+The **Multiplayer Host** is a class library helping game developers implementing multiplayer game servers. It exposes a **Server** component 
+that streamlines message handling, message buffering, user state handling and invoking the game implementation layer.
+The Server component does not contain any game specific logic. Game developers deal with the game logic by implementing several interfaces 
+invoked by the server component.
+
+The goal of this project is to create a framework for streamlining the game backend development. 
+
+
+## High level architecture
+![project logo](host/images/conceptual-diagram.png)
+
 
 ### The multiplayer game server implements
 * abstract User class and user management
@@ -19,6 +30,7 @@ The multiplayer game server is a class library helping game developers implement
 * any kind of game specific logic
 * any kind of client connectivity
 * any kind of data storage
+* anything related to game clients
 
 ## Components
 The server cannot run as a stand-alone application, instead it is designed to be used with external components providing:
