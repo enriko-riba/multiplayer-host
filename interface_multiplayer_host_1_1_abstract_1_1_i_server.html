@@ -24,6 +24,7 @@
    <div id="projectname">Multiplayer Host
    &#160;<span id="projectnumber">0.0.1</span>
    </div>
+   <div id="projectbrief">Framework for building multiplayer game servers written in c# 9/.NET 5</div>
   </td>
  </tr>
  </tbody>
@@ -109,7 +110,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a866181b95b8aaf74f7f4b83edebb7355"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets a user by its id.  <a href="interface_multiplayer_host_1_1_abstract_1_1_i_server.html#a866181b95b8aaf74f7f4b83edebb7355">More...</a><br /></td></tr>
 <tr class="separator:a866181b95b8aaf74f7f4b83edebb7355"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5a1f4565d251ad779083bf665bc89362"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="interface_multiplayer_host_1_1_abstract_1_1_i_server.html#a5a1f4565d251ad779083bf665bc89362">EnqueueClientMessage</a> (in <a class="el" href="struct_multiplayer_host_1_1_messages_1_1_client_message.html">ClientMessage</a> message)</td></tr>
-<tr class="memdesc:a5a1f4565d251ad779083bf665bc89362"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stores an incomming client message to the processing queue.  <a href="interface_multiplayer_host_1_1_abstract_1_1_i_server.html#a5a1f4565d251ad779083bf665bc89362">More...</a><br /></td></tr>
+<tr class="memdesc:a5a1f4565d251ad779083bf665bc89362"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stores an incoming client message to the processing queue.  <a href="interface_multiplayer_host_1_1_abstract_1_1_i_server.html#a5a1f4565d251ad779083bf665bc89362">More...</a><br /></td></tr>
 <tr class="separator:a5a1f4565d251ad779083bf665bc89362"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a605955a394611c1e427fba0b70c9808e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="interface_multiplayer_host_1_1_abstract_1_1_i_server.html#a605955a394611c1e427fba0b70c9808e">CreateServerMessage</a> (int opCode, int[] targets, <a class="el" href="namespace_multiplayer_host_1_1_messages.html#a6cc1795cc081449281ef4b3f7046fb6e">TargetKind</a> targetKind, string payload)</td></tr>
 <tr class="memdesc:a605955a394611c1e427fba0b70c9808e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a server message and sends it to clients based on the TargetKind and targets combination.  <a href="interface_multiplayer_host_1_1_abstract_1_1_i_server.html#a605955a394611c1e427fba0b70c9808e">More...</a><br /></td></tr>
@@ -289,7 +290,7 @@ Events</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Stores an incomming client message to the processing queue. </p>
+<p>Stores an incoming client message to the processing queue. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">message</td><td></td></tr>
