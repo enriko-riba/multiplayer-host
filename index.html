@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.20"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Multiplayer Host: Multiplayer Host</title>
+<title>Multiplayer Host: Main Page</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -61,80 +61,11 @@ $(function() {
 </iframe>
 </div>
 
-<div class="PageDoc"><div class="header">
+<div class="header">
   <div class="headertitle">
-<div class="title">Multiplayer Host </div>  </div>
+<div class="title">Multiplayer Host Documentation</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p><a class="anchor" id="md_README"></a><img src="host/images/image.png" alt="project logo" class="inline"/></p>
-<p><img src="https://github.com/enriko-riba/multiplayer-host/workflows/.NET%20Core/badge.svg" alt=".NET 5" style="pointer-events: none;" class="inline"/></p>
-<h1><a class="anchor" id="autotoc_md1"></a>
-Overview</h1>
-<p>The <b>Multiplayer Host</b> is a class library helping game developers implementing multiplayer game servers. It exposes a <b>Server</b> component that streamlines message handling, message buffering, user state handling and invoking the game implementation layer. The Server component does not contain any game specific logic. Game developers deal with the game logic by implementing several interfaces invoked by the server component.</p>
-<p>The goal of this project is to create a framework for streamlining the game backend development.</p>
-<h1><a class="anchor" id="autotoc_md2"></a>
-High level architecture</h1>
-<p><img src="host/images/conceptual-diagram.png" alt="project logo" class="inline"/></p>
-<h2><a class="anchor" id="autotoc_md3"></a>
-Multiplayer Host implements</h2>
-<ul>
-<li>abstract User class and user management</li>
-<li>main game loop</li>
-<li>message dispatcher loop</li>
-<li>client message double buffering (accepts new incoming messages simultaneously with turn processing)</li>
-<li>server message buffering</li>
-<li>dedicated background threads for the main loop and message dispatcher</li>
-<li>public IServer api supporting basic server operations, queuing client messages and creating response messages</li>
-</ul>
-<h2><a class="anchor" id="autotoc_md4"></a>
-Multiplayer Host does not implement</h2>
-<ul>
-<li>a real game - although a minimalistic reference game (server and client) is provided for test purposes</li>
-<li>any kind of game specific logic</li>
-<li>any kind of client connectivity</li>
-<li>any kind of data storage</li>
-<li>anything related to game clients</li>
-</ul>
-<h1><a class="anchor" id="autotoc_md5"></a>
-Components</h1>
-<p>The server requires external components providing the following interfaces:</p><ul>
-<li>**<code>IConnectionManager</code>**, providing client connection management and message sending/receiving</li>
-<li>**<code>IRepository</code>**, providing game persistence</li>
-<li>**<code>ITurnProcessor</code>**, providing the game logic</li>
-<li>in addition the host implements the **<code>IServer</code>** to be used by other components to control and communicate with the server</li>
-</ul>
-<h2><a class="anchor" id="autotoc_md6"></a>
-Turn processing</h2>
-<p>The server uses the <code>ITurnProcessor</code> interface to invoke game specific logic. The turn processors methods are invoked in the following order:</p><ol type="1">
-<li><code>ITurnProcessor.ProcessClientMessage(User user, in ClientMessage message);</code> invoked once for every received client message</li>
-<li><code>ITurnProcessor.ProcessUserTurn(User user, int ellapsedMilliseconds);</code> invoked once per turn for every user (both online and offline)</li>
-<li><code>ITurnProcessor.OnTurnComplete();</code> invoked once per turn after all messages and users have been processed</li>
-</ol>
-<h1><a class="anchor" id="autotoc_md7"></a>
-Quickstart</h1>
-<ol type="1">
-<li>create a game specific user entity inheriting from <code><a class="el" href="class_multiplayer_host_1_1_domain_1_1_user.html" title="The user object managed by the GameServer.">MultiplayerHost.Domain.User</a></code> <div class="fragment"><div class="line"><span class="keyword">public</span> <span class="keyword">class </span>Player : User</div>
-<div class="line">{</div>
-<div class="line">    <span class="keyword">public</span> <span class="keywordtype">int</span> Diamond { <span class="keyword">get</span>; <span class="keyword">internal</span> <span class="keyword">set</span>; }</div>
-<div class="line">    <span class="keyword">public</span> <span class="keywordtype">int</span> Gold { <span class="keyword">get</span>; <span class="keyword">internal</span> <span class="keyword">set</span>; }</div>
-<div class="line">    <span class="keyword">public</span> <span class="keywordtype">int</span> Reputation { <span class="keyword">get</span>; <span class="keyword">internal</span> <span class="keyword">set</span>; }</div>
-<div class="line">    ...</div>
-<div class="line">}</div>
-</div><!-- fragment --></li>
-<li>implement the three mandatory interfaces: <code>IConnectionManager</code>, <code>IRepository</code> and <code>ITurnProcessor</code>. Note: for testing purposes a single class could implement all of them. When dealing with users inside your game logic, make sure to cast the provided User instance into your specific user entity class. The server will only use the IRepository interface to save the user state. If you need to persist additional state you must implement it as part of your game logic.</li>
-<li>Implement client messages and corresponding parsers/handlers, define server messages and specify their payload format</li>
-<li>obtain an IServer reference, grab the context and provide the interface implementations <div class="fragment"><div class="line">IServer server;</div>
-<div class="line">var context = server.Context;</div>
-<div class="line">context.Configure(repository, connMngr, turnProcessor);</div>
-<div class="line"><span class="comment">// optionally subscribe for initial game setup: context.Server.OnBeforeServerStart += OnServerStart;</span></div>
-</div><!-- fragment --></li>
-<li>start the server <div class="fragment"><div class="line">await server.Start();</div>
-</div><!-- fragment --></li>
-<li>The server starts invoking the turn processing logic</li>
-<li>You also need a client capable of exchanging messages with your IConnectionManager implementation</li>
-</ol>
-<p><b>Note</b>: The multiplayer game server is easiest to be used with a DI container. Consult the reference game server project how to setup DI in a console application. </p>
-</div></div><!-- PageDoc -->
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

@@ -9,8 +9,7 @@ var indexSectionsWithContent =
   6: "t",
   7: "at",
   8: "cdilprstu",
-  9: "op",
-  10: "m"
+  9: "op"
 };
 
 var indexSectionNames =
@@ -24,8 +23,7 @@ var indexSectionNames =
   6: "enums",
   7: "enumvalues",
   8: "properties",
-  9: "events",
-  10: "pages"
+  9: "events"
 };
 
 var indexSectionLabels =
@@ -39,7 +37,6 @@ var indexSectionLabels =
   6: "Enumerations",
   7: "Enumerator",
   8: "Properties",
-  9: "Events",
-  10: "Pages"
+  9: "Events"
 };
 
