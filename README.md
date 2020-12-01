@@ -16,7 +16,7 @@ The goal of this project is to create a framework for streamlining the game back
 ![project logo](host/images/conceptual-diagram.png)
 
 
-### The multiplayer game server implements
+### Multiplayer Host implements
 * abstract User class and user management
 * main game loop
 * message dispatcher loop
@@ -25,27 +25,27 @@ The goal of this project is to create a framework for streamlining the game back
 * dedicated background threads for the main loop and message dispatcher
 * public IServer api supporting basic server operations, queuing client messages and creating response messages
 
-### The multiplayer game server does not implement
+### Multiplayer Host does not implement
 * a real game - although a minimalistic reference game (server and client) is provided for test purposes
 * any kind of game specific logic
 * any kind of client connectivity
 * any kind of data storage
 * anything related to game clients
 
-## Components
-The server cannot run as a stand-alone application, instead it is designed to be used with external components providing:
-* client connection management and message sending/receiving by implementing a **`IConnectionManager`** component
-* game persistence by implementing a **`IRepository`** component
-* game logic by implementing a **`ITurnProcessor`** component
-* in addition an **`IServer`** component is provided for the game implementors to support server operations
+# Components
+The server requires external components providing the following interfaces:
+* **`IConnectionManager`**, providing client connection management and message sending/receiving 
+* **`IRepository`**, providing game persistence
+* **`ITurnProcessor`**, providing the game logic
+* in addition the host implements the **`IServer`** to be used by other components to control and communicate with the server
 
 ## Turn processing
-The server uses the `ITurnProcessor` interface to invoke game specific logic. The server invokes turn processors in the following order:
-1. `ITurnProcessor.ProcessClientMessage(User user, in ClientMessage message);` invoked for every received message 
-2. `ITurnProcessor.ProcessUserTurn(User user, int ellapsedMilliseconds);` invoked for every existing user (both online and offline)
-3. `ITurnProcessor.OnTurnComplete();`
+The server uses the `ITurnProcessor` interface to invoke game specific logic. The turn processors methods are invoked in the following order:
+1. `ITurnProcessor.ProcessClientMessage(User user, in ClientMessage message);` invoked once for every received client message 
+2. `ITurnProcessor.ProcessUserTurn(User user, int ellapsedMilliseconds);` invoked once per turn for every user (both online and offline)
+3. `ITurnProcessor.OnTurnComplete();` invoked once per turn after all messages and users have been processed
 
-## Quickstart
+# Quickstart
 1. create a game specific user entity inheriting from `MultiplayerHost.Domain.User`
 ```cs
 public class Player : User
