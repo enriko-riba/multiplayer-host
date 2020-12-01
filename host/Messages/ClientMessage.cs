@@ -13,24 +13,24 @@ namespace MultiplayerHost.Messages
         public int PlayerId { get; init; }
 
         /// <summary>
-        /// Client generated unique ID. 
-        /// This field is ignored by the server Server. It is free to use by game implementation.
+        /// Client generated Id. 
+        /// This field is ignored by the server, the game implementation can use it as will.
         /// </summary>
         public int Cid { get; init; }
 
         /// <summary>
         /// Client generated message creation time in ticks.
-        /// This field is ignored by the server Server. It is free to use by game implementation.
+        /// This field is ignored by the server, the game implementation can use it as will.
         /// </summary>
         public long Created { get; init; }
 
         /// <summary>
-        /// Op code of the request message as defined by the custom game implementation.
+        /// Command code of the message. This field is ignored by the server, the game implementation can use it as will.
         /// </summary>
         public int Code { get; init; }
 
         /// <summary>
-        /// Payload, used by the game implementation.
+        /// Message payload. This field is ignored by the server, the game implementation can use it as will.
         /// </summary>
         public string Data { get; init; }
     }

@@ -20,8 +20,8 @@
         /// <summary>
         /// Invoked by the server for every message received from clients.
         /// The implementation is expected to return immediately with processing reduced to bare minimum.
-        /// For example proccessing of a 'MoveTo x,y' message should only update player state: player.Destination = (x,y);
-        /// and return. The movement processing is calulated inside the <see cref="ProcessUserTurn(User, int)"/> method where the ellapsed time is available.
+        /// For example processing of a 'MoveTo x,y' message should only update player state: player.Destination = (x,y);
+        /// and return. The movement processing is calculated inside the <see cref="ProcessUserTurn(User, int)"/> method where the elapsed time is available.
         /// </summary>
         /// <param name="user"></param>
         /// <param name="msg"></param>

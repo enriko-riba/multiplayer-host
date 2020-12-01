@@ -6,7 +6,7 @@
     /// <summary>
     /// The user object managed by the GameServer.
     /// </summary>
-    public class User
+    public abstract class User
     {
         /// <summary>
         /// Unique user id.
