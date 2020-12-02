@@ -57,7 +57,7 @@
         /// </summary>
         public async Task Start()
         {
-            logger.WithMethodName().LogInformation("starting server...");
+            logger.LogInformation("starting server...");
 
             if (IsRunning) throw new Exception("Already running");
             if (!context.IsContextValid) throw new Exception("ServerContext is not valid");
@@ -71,7 +71,7 @@
             {
                 users.Add(user.Id, user);
             }
-            logger.WithMethodName().LogInformation("loaded {UserCount} users", activeUsers.Count());
+            logger.LogInformation("loaded {UserCount} users", activeUsers.Count());
 
             //  signal server start
             var handler = OnBeforeServerStart;
@@ -82,10 +82,10 @@
             mainLoopTask = Task.Run(MainLoop);
             dispatcherTask = Task.Run(DispatcherLoop);
             await Task.Delay(50);
-            logger.WithMethodName().LogInformation("IRepository implementation: {IRepository}", context.Repository.GetType().FullName);
-            logger.WithMethodName().LogInformation("IConnectionManager implementation: {IConnectionManager}", context.ConnectionManager.GetType().FullName);
-            logger.WithMethodName().LogInformation("ITurnProcessor implementation: {ITurnProcessor}", context.TurnProcessor.GetType().FullName);
-            logger.WithMethodName().LogInformation("multiplayer host server is up & running!");
+            logger.LogInformation("IRepository implementation: {IRepository}", context.Repository.GetType().FullName);
+            logger.LogInformation("IConnectionManager implementation: {IConnectionManager}", context.ConnectionManager.GetType().FullName);
+            logger.LogInformation("ITurnProcessor implementation: {ITurnProcessor}", context.TurnProcessor.GetType().FullName);
+            logger.LogInformation("multiplayer host server is up & running!");
         }
 
         /// <summary>
@@ -93,11 +93,11 @@
         /// </summary>
         public void Stop()
         {
-            logger.WithMethodName().LogWarning("stopping server...");
+            logger.LogWarning("stopping server...");
             IsRunning = false;
             mainLoopTask?.Wait();
             dispatcherTask?.Wait();
-            logger.WithMethodName().LogWarning("server stopped!");
+            logger.LogWarning("server stopped!");
         }
 
         /// <summary>
@@ -106,7 +106,7 @@
         /// <param name="user"></param>
         public void AddUser(User user)
         {
-            logger.WithMethodName().LogInformation("{@User}", user);
+            logger.LogInformation("{@User}", user);
             users.Add(user.Id, user);
         }
 
@@ -116,7 +116,7 @@
         /// <param name="user"></param>
         public void RemoveUser(User user)
         {
-            logger.WithMethodName().LogWarning("{@User}", user);
+            logger.LogWarning("{@User}", user);
             if (users.Remove(user.Id))
             {
                 context.Repository.DeleteUserAsync(user);
@@ -203,12 +203,12 @@
             if (users.TryGetValue(pc.PlayerId, out var user))
             {
                 user.IsOnlineSince = DateTime.UtcNow;
-                logger.WithMethodName().LogInformation("{PlayerId}", pc.PlayerId);
+                logger.LogInformation("{PlayerId}", pc.PlayerId);
             }
             else
             {
                 pc.Cancel = true;
-                logger.WithMethodName().LogWarning("canceling connection for unknown player {PlayerId}", pc.PlayerId);
+                logger.LogWarning("canceling connection for unknown player {PlayerId}", pc.PlayerId);
             }
         }
         
@@ -217,11 +217,11 @@
             if (users.TryGetValue(pd.PlayerId, out var user))
             {
                 user.IsOnlineSince = null;
-                logger.WithMethodName().LogInformation("{PlayerId}", pd.PlayerId);
+                logger.LogInformation("{PlayerId}", pd.PlayerId);
             }
             else
             {
-                logger.WithMethodName().LogWarning("{PlayerId}", pd.PlayerId);
+                logger.LogWarning("{PlayerId}", pd.PlayerId);
             }
         }
     }
