@@ -19,7 +19,7 @@
         private async Task MainLoop()
         {
             Thread.CurrentThread.Name = nameof(MainLoop);
-            logger.WithMethodName().LogInformation(nameof(MainLoop) + " started. Tick duration: {TickDuration}", TICK_DURATION);
+            logger.LogInformation(nameof(MainLoop) + " started. Tick duration: {TickDuration}", TICK_DURATION);
 
             var sw = new Stopwatch();
             sw.Start();
@@ -40,7 +40,7 @@
                 }
                 catch (Exception ex)
                 {
-                    logger.WithMethodName().LogError(ex, "error while processing turn {TickCounter}", tickCounter);
+                    logger.LogError(ex, "error while processing turn {TickCounter}", tickCounter);
                 }
 
                 tickEnd = sw.ElapsedMilliseconds;
@@ -48,7 +48,7 @@
                 var sleepTimeMillis = Math.Max(TICK_DURATION - duration, 1);
                 await Task.Delay(sleepTimeMillis);
             }
-            logger.WithMethodName().LogWarning(nameof(MainLoop) + " ended");
+            logger.LogWarning(nameof(MainLoop) + " ended");
         }
 
         private async Task ProcessAllUsers(int ellapsedMilliseconds)
@@ -67,12 +67,12 @@
                     }
                     else
                     {
-                        logger.WithMethodName().LogError("could not find user {PlayerId}", key);
+                        logger.LogError("could not find user {PlayerId}", key);
                     }
                 }
                 catch (Exception ex)
                 {
-                    logger.WithMethodName().LogError(ex, "User " + key);
+                    logger.LogError(ex, "User " + key);
                 }
             }
         }
@@ -91,7 +91,7 @@
                 }
                 else
                 {
-                    logger.WithMethodName().LogError("could not find user {PlayerId}", msg.PlayerId);
+                    logger.LogError("could not find user {PlayerId}", msg.PlayerId);
                 }
             }
         }

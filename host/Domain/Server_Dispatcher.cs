@@ -13,7 +13,7 @@
         private async Task DispatcherLoop()
         {
             Thread.CurrentThread.Name = nameof(DispatcherLoop);
-            logger.WithMethodName().LogInformation(nameof(DispatcherLoop) + " started");
+            logger.LogInformation(nameof(DispatcherLoop) + " started");
             while (IsRunning)
             {
                 try
@@ -28,10 +28,10 @@
                 }
                 catch (Exception ex)
                 {
-                    logger.WithMethodName().LogError(ex, "error dispatching response");
+                    logger.LogError(ex, "error dispatching response");
                 }
             }
-            logger.WithMethodName().LogWarning(nameof(DispatcherLoop) + " loop ended");
+            logger.LogWarning(nameof(DispatcherLoop) + " loop ended");
         }
     }
 }
