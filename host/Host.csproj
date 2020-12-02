@@ -6,7 +6,7 @@
         <Nullable>disable</Nullable>
 
         <PackageId>MultiplayerHost</PackageId>
-        <Version>0.1.1-alpha</Version>
+        <Version>0.1.1</Version>
         <Authors>Enriko Riba</Authors>
         <Company></Company>
         <Product>MultiplayerHost</Product>
