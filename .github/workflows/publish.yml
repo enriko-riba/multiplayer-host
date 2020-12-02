@@ -19,13 +19,14 @@ jobs:
 
 
     - name: Install GitVersion
-      uses: gittools/actions/gitversion/setup@v0.9
+      uses: gittools/actions/gitversion/setup@v0.9.7
       with:
-          versionSpec: '5.1.x'
+        versionSpec: '6.x'
+        includePrerelease: true
     
     - name: Use GitVersion
       id: gitversion # step id used as reference for output values
-      uses: gittools/actions/gitversion/execute@v0.9
+      uses: gittools/actions/gitversion/execute@v0.9.7
     - run: |
         echo "Major: ${{ steps.gitversion.outputs.major }}"
         echo "Minor: ${{ steps.gitversion.outputs.minor }}"
@@ -70,6 +71,6 @@ jobs:
       uses: brandedoutcast/publish-nuget@v2
       with:
         PROJECT_FILE_PATH: host/Host.csproj
-        VERSION_REGEX: '^\s*<Version>(.*)<\/Version>\s*$'
+        VERSION_STATIC: 1.0.0
         TAG_FORMAT: '*'
         NUGET_KEY: ${{secrets.NUGET_KEY}}
