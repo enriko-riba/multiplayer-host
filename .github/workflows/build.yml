@@ -1,4 +1,4 @@
-name: .NET Core
+name: Build .NET 5 class library
 
 on:
   push:
@@ -12,13 +12,15 @@ jobs:
     name: Build
     steps:
     - uses: actions/checkout@v2
-    - name: Setup .NET Core
+    - name: Setup .NET 5
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 5.0.100
     - name: Install dependencies
       run: dotnet restore MultiplayerHost.sln
+
     - name: Build
       run: dotnet build MultiplayerHost.sln --configuration Release --no-restore
+
     - name: Test
       run: dotnet test MultiplayerHost.sln --no-restore --verbosity normal
