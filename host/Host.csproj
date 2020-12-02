@@ -17,7 +17,7 @@
         <PackageTags>net5.0 c# gamedev</PackageTags>
         <PackageLicenseExpression></PackageLicenseExpression>
         <AssemblyVersion>0.1.1.0</AssemblyVersion>
-        <PackageIcon>favicon.ico</PackageIcon>
+        <PackageIcon>image-logo.png</PackageIcon>
         <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     </PropertyGroup>
     <ItemGroup>
