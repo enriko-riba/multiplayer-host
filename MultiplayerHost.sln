@@ -5,9 +5,9 @@ VisualStudioVersion = 16.0.30709.64
 MinimumVisualStudioVersion = 15.0.26124.0
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Host", "host\Host.csproj", "{BA02C2D8-35CA-4253-BB0E-815FCEEAD614}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Game", "reference-game\Game.csproj", "{459657DE-92C2-4ACC-94F6-3E700F7F8718}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReferenceGame", "reference-game\ReferenceGame.csproj", "{459657DE-92C2-4ACC-94F6-3E700F7F8718}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Client", "reference-client\Client.csproj", "{0FEBD58E-C382-4676-AF22-C6B5BB6D9429}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReferenceClient", "reference-client\ReferenceClient.csproj", "{0FEBD58E-C382-4676-AF22-C6B5BB6D9429}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{3BD1E19C-504A-4933-95E2-5FC9632FF281}"
 	ProjectSection(SolutionItems) = preProject

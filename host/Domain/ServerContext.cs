@@ -38,7 +38,7 @@
         /// <summary>
         /// Returns the configured turn processor.
         /// </summary>
-        public ITurnProcessor TurnProcessor { get; set; }
+        public ITurnProcessor TurnProcessor { get; private set; }
 
         /// <summary>
         /// Returns the server instance.

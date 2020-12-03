@@ -34,7 +34,8 @@
                 try
                 {
                     requestBuffer.SwapBuffers();
-                    ProcessAllMessages();
+                    await context.TurnProcessor.OnTurnStart(tickCounter);
+                    ProcessClientMessages();
                     await ProcessAllUsers(ellapsedMilliseconds);
                     await context.TurnProcessor.OnTurnComplete();
                 }
@@ -81,7 +82,7 @@
         /// Reads all messages from the request buffer and sends them to the turn processor.
         /// </summary>
         /// <returns></returns>
-        private void ProcessAllMessages()
+        private void ProcessClientMessages()
         {
             while (requestBuffer.TryRead(out var msg))
             {
