@@ -4,9 +4,7 @@
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <RootNamespace>MultiplayerHost</RootNamespace>
         <Nullable>disable</Nullable>
-
         <PackageId>MultiplayerHost</PackageId>
-        <Version>0.1.1</Version>
         <Authors>Enriko Riba</Authors>
         <Company></Company>
         <Product>MultiplayerHost</Product>
@@ -16,7 +14,6 @@
         <RepositoryUrl>https://github.com/enriko-riba/multiplayer-host</RepositoryUrl>
         <PackageTags>net5.0 c# gamedev</PackageTags>
         <PackageLicenseExpression></PackageLicenseExpression>
-        <AssemblyVersion>0.1.1.0</AssemblyVersion>
         <PackageIcon>image-logo.png</PackageIcon>
         <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     </PropertyGroup>
