@@ -15,7 +15,7 @@
         /// </summary>
         /// <param name="tick">the server turn counter.</param>
         /// <returns></returns>
-        Task OnTurnStart(long tick);
+        Task OnTurnStart(ulong tick);
 
         /// <summary>
         /// Invoked by the server for every message received from clients.
