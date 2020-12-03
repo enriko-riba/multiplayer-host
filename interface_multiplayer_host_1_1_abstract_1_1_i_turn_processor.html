@@ -80,9 +80,9 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ad26a00f5a41ef566467d62a7056de4ce"><td class="memItemLeft" align="right" valign="top">Task&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="interface_multiplayer_host_1_1_abstract_1_1_i_turn_processor.html#ad26a00f5a41ef566467d62a7056de4ce">OnTurnStart</a> (long tick)</td></tr>
-<tr class="memdesc:ad26a00f5a41ef566467d62a7056de4ce"><td class="mdescLeft">&#160;</td><td class="mdescRight">Invoked by the server before a new turn starts. If no implementation is needed return Task.CompletedTask.  <a href="interface_multiplayer_host_1_1_abstract_1_1_i_turn_processor.html#ad26a00f5a41ef566467d62a7056de4ce">More...</a><br /></td></tr>
-<tr class="separator:ad26a00f5a41ef566467d62a7056de4ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac5970b958351360618daa70ec36a4d27"><td class="memItemLeft" align="right" valign="top">Task&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="interface_multiplayer_host_1_1_abstract_1_1_i_turn_processor.html#ac5970b958351360618daa70ec36a4d27">OnTurnStart</a> (ulong tick)</td></tr>
+<tr class="memdesc:ac5970b958351360618daa70ec36a4d27"><td class="mdescLeft">&#160;</td><td class="mdescRight">Invoked by the server before a new turn starts. If no implementation is needed return Task.CompletedTask.  <a href="interface_multiplayer_host_1_1_abstract_1_1_i_turn_processor.html#ac5970b958351360618daa70ec36a4d27">More...</a><br /></td></tr>
+<tr class="separator:ac5970b958351360618daa70ec36a4d27"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4e0cba2aa040e6f639c68311edc03214"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="interface_multiplayer_host_1_1_abstract_1_1_i_turn_processor.html#a4e0cba2aa040e6f639c68311edc03214">ProcessClientMessage</a> (<a class="el" href="class_multiplayer_host_1_1_domain_1_1_user.html">User</a> user, in <a class="el" href="struct_multiplayer_host_1_1_messages_1_1_client_message.html">ClientMessage</a> msg)</td></tr>
 <tr class="memdesc:a4e0cba2aa040e6f639c68311edc03214"><td class="mdescLeft">&#160;</td><td class="mdescRight">Invoked by the server for every message received from clients. The implementation is expected to return immediately with processing reduced to bare minimum. For example processing of a 'MoveTo x,y' message should only update player state: player.Destination = (x,y); and return. The movement processing is calculated inside the <a class="el" href="interface_multiplayer_host_1_1_abstract_1_1_i_turn_processor.html#a20b3d398f1f36e4837c1c9cf2ea083d3" title="Main game logic processing method. Invoked by the server for each user (both connected and disconnect...">ProcessUserTurn(User, int)</a> method where the elapsed time is available.  <a href="interface_multiplayer_host_1_1_abstract_1_1_i_turn_processor.html#a4e0cba2aa040e6f639c68311edc03214">More...</a><br /></td></tr>
 <tr class="separator:a4e0cba2aa040e6f639c68311edc03214"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -116,8 +116,8 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="ad26a00f5a41ef566467d62a7056de4ce"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad26a00f5a41ef566467d62a7056de4ce">&#9670;&nbsp;</a></span>OnTurnStart()</h2>
+<a id="ac5970b958351360618daa70ec36a4d27"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac5970b958351360618daa70ec36a4d27">&#9670;&nbsp;</a></span>OnTurnStart()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -125,7 +125,7 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">Task MultiplayerHost.Abstract.ITurnProcessor.OnTurnStart </td>
           <td>(</td>
-          <td class="paramtype">long&#160;</td>
+          <td class="paramtype">ulong&#160;</td>
           <td class="paramname"><em>tick</em></td><td>)</td>
           <td></td>
         </tr>
