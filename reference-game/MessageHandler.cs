@@ -18,6 +18,9 @@ namespace MultiplayerHost.ReferenceGame
                 >= (int)ClientOpCode.InvalidUpper => ClientOpCode.InvalidUpper,
                 _ => Enum.IsDefined(typeof(ClientOpCode), msg.Code) ? (ClientOpCode)msg.Code : ClientOpCode.Unsupported
             };
+
+            //  TODO: implement validation
+            return true;
         }
     }
 }
