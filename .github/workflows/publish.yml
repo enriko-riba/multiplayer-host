@@ -75,13 +75,9 @@ jobs:
     - name: Build
       run: dotnet build host/Host.csproj --configuration Release --no-restore
 
-    - name: dotnet publish
-      run: dotnet publish host/Host.csproj --configuration Release /p:AssemblyVersion=${{ steps.gitversion.outputs.assemblySemFileVer }} /p:FileVersion=${{ steps.gitversion.outputs.assemblySemFileVer }} /p:InformationalVersion=${{ steps.gitversion.outputs.Sha }}
+    - name: Pack with dotnet
+      run: dotnet pack host/Host.csproj  --output nuget-packages --configuration Release -p:PackageVersion=${{ steps.gitversion.outputs.nuGetVersionV2 }}-${{ steps.gitversion.outputs.CommitsSinceVersionSourcePadded }} 
 
-    - name: Publish to NuGet
-      uses: brandedoutcast/publish-nuget@v2
-      with:
-        PROJECT_FILE_PATH: host/Host.csproj
-        VERSION_STATIC: 1.0.0
-        TAG_FORMAT: '*'
-        NUGET_KEY: ${{secrets.NUGET_KEY}}
+    - name: Push with dotnet
+      run: dotnet nuget push nuget-packages/*.nupkg --api-key ${{ secrets.NUGET_KEY }} --source https://api.nuget.org/v3/index.json
+
