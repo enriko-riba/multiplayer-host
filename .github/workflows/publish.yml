@@ -19,8 +19,9 @@ jobs:
 
     - name: Checkout
       uses: actions/checkout@v2
-    - name: Fetch all history for all tags and branches
-      run: git fetch --tags
+      with:
+        fetch-depth: 0
+      run: git fetch --tags    
 
     - name: Install GitVersion
       uses: gittools/actions/gitversion/setup@v0.9.7
