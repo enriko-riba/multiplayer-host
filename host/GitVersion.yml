@@ -2,12 +2,13 @@ mode: ContinuousDelivery
 continuous-delivery-fallback-tag: ''
 branches:
   release:
-    regex: release?[/]
+    regex: ^releases$
     mode: ContinuousDeployment
     increment: Minor
     tag: ''
     is-release-branch: true
     prevent-increment-of-merged-branch-version: true
+    commit-message-incrementing: Enabled
 ignore:
   sha: []
 merge-message-formats: {}
