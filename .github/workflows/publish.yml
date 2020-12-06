@@ -48,6 +48,7 @@ jobs:
       uses: gittools/actions/gitversion/execute@v0.9.7
       with:
         useConfigFile: true
+        configFilePath: host/GitVersion.yml
         additionalArguments: '/showConfig'
 
     - name: Output version values 
