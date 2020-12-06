@@ -33,11 +33,6 @@ jobs:
       with:
         versionSpec: '5.x'
 
-    - name: Test exe
-      run: |
-        echo "gitversion.exe"
-        ./host/gitversion.exe
-
     - name: Use GitVersion
       id: gitversion
       uses: gittools/actions/gitversion/execute@v0.9.7
