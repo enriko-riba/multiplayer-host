@@ -17,6 +17,9 @@
         <PackageIcon>image-logo.png</PackageIcon>
         <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+      <DocumentationFile></DocumentationFile>
+    </PropertyGroup>
     <ItemGroup>
         <None Remove=".editorconfig" />
         <None Include="images\image-logo.png" Pack="true" PackagePath="" />
