@@ -38,6 +38,11 @@ jobs:
         echo "dotnet-gitversion"
         dotnet-gitversion
 
+    - name: Install GitVersion
+      uses: gittools/actions/gitversion/setup@v0.9.7
+      with:
+        versionSpec: '5.3.x'
+
     - name: Use GitVersion
       id: gitversion
       uses: gittools/actions/gitversion/execute@v0.9.7
