@@ -10,7 +10,7 @@ namespace MultiplayerHost.Messages
         /// <summary>
         /// ID of logged in user.
         /// </summary>
-        public int PlayerId { get; init; }
+        public int UserId { get; init; }
 
         /// <summary>
         /// Client generated Id. 

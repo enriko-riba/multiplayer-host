@@ -86,13 +86,13 @@
         {
             while (requestBuffer.TryRead(out var msg))
             {
-                if (users.TryGetValue(msg.PlayerId, out var user))
+                if (users.TryGetValue(msg.UserId, out var user))
                 {
                     context.TurnProcessor.ProcessClientMessage(user, in msg);
                 }
                 else
                 {
-                    logger.LogError("could not find user {PlayerId}", msg.PlayerId);
+                    logger.LogError("could not find user {UserId}", msg.UserId);
                 }
             }
         }
