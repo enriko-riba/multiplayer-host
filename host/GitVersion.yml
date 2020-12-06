@@ -1,8 +1,7 @@
 mode: ContinuousDelivery
 continuous-delivery-fallback-tag: ''
 branches:
-  release:
-    regex: release?[/]
+  release:    
     mode: ContinuousDeployment
     increment: Minor
     tag: ''
