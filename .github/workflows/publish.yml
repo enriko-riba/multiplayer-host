@@ -3,9 +3,9 @@ name: Publish to NuGet
 
 on:
   push:
-    branches: [ main ]
+    branches: [ release ]
   pull_request:
-    branches: [ main ]
+    branches: [ release ]
 
 jobs:  
   publish-nuget:
@@ -33,10 +33,10 @@ jobs:
       with:
         versionSpec: '5.x'
 
-    - name: Test dotnet-gitversion
+    - name: Test exe
       run: |
-        echo "dotnet-gitversion"
-        dotnet-gitversion
+        echo "gitversion.exe"
+        ./host/gitversion.exe
 
     - name: Use GitVersion
       id: gitversion
