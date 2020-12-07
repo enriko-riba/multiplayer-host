@@ -1,11 +1,10 @@
 name: Publish to NuGet
 
-
 on:
   push:
-    branches: [ main ]
+    branches: [ release, release1.0.0 ]
   pull_request:
-    branches: [ main ]
+    branches: [ release, release1.0.0 ]
 
 jobs:  
   publish-nuget:
@@ -13,7 +12,7 @@ jobs:
     name: NuGet
     steps:
     
-    - name: Checkout Code
+    - name: Git checkout
       uses: actions/checkout@v2
       with:
         fetch-depth: 0
@@ -33,14 +32,11 @@ jobs:
       with:
         versionSpec: '5.x'
 
-    - name: Test dotnet-gitversion
-      run: |
-        echo "dotnet-gitversion"
-        dotnet-gitversion
-
     - name: Use GitVersion
       id: gitversion
       uses: gittools/actions/gitversion/execute@v0.9.7
+      with:
+        useConfigFile: true
 
     - name: Output version values 
       run: |
