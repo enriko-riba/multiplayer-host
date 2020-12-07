@@ -1,6 +1,5 @@
 name: Publish to NuGet
 
-
 on:
   push:
     branches: [ release ]
@@ -13,7 +12,7 @@ jobs:
     name: NuGet
     steps:
     
-    - name: Checkout Code
+    - name: Git checkout
       uses: actions/checkout@v2
       with:
         fetch-depth: 0

@@ -11,12 +11,16 @@ jobs:
     runs-on: ubuntu-latest
     name: Build
     steps:
-    - uses: actions/checkout@v2
-    - name: Setup .NET 5
+
+    - name: Git checkout
+      uses: actions/checkout@v2
+
+    - name: Install .NET 5
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 5.0.100
-    - name: Install dependencies
+
+    - name: Restore
       run: dotnet restore MultiplayerHost.sln
 
     - name: Build
