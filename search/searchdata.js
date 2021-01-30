@@ -5,11 +5,10 @@ var indexSectionsWithContent =
   2: "m",
   3: "cirstu",
   4: "acdefgoprs",
-  5: "ciu",
-  6: "t",
-  7: "at",
-  8: "cdilprstu",
-  9: "op"
+  5: "t",
+  6: "at",
+  7: "cdilprstu",
+  8: "op"
 };
 
 var indexSectionNames =
@@ -19,11 +18,10 @@ var indexSectionNames =
   2: "namespaces",
   3: "files",
   4: "functions",
-  5: "variables",
-  6: "enums",
-  7: "enumvalues",
-  8: "properties",
-  9: "events"
+  5: "enums",
+  6: "enumvalues",
+  7: "properties",
+  8: "events"
 };
 
 var indexSectionLabels =
@@ -33,10 +31,9 @@ var indexSectionLabels =
   2: "Namespaces",
   3: "Files",
   4: "Functions",
-  5: "Variables",
-  6: "Enumerations",
-  7: "Enumerator",
-  8: "Properties",
-  9: "Events"
+  5: "Enumerations",
+  6: "Enumerator",
+  7: "Properties",
+  8: "Events"
 };
 
