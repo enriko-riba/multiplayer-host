@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "ReferenceGame": {
+      "commandName": "Project"
+    },
+    "Docker": {
+      "commandName": "Docker"
+    }
+  }
+}
