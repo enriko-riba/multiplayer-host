@@ -2,10 +2,8 @@ name: Publish to NuGet
 
 on:
   push:
-    branches: [ release, release1.0.0 ]
-  pull_request:
-    branches: [ release, release1.0.0 ]
-
+    branches: [ release\* ]
+ 
 jobs:  
   publish-nuget:
     runs-on: ubuntu-latest
