@@ -2,7 +2,7 @@ name: Publish to NuGet
 
 on:
   push:
-    branches: [ release\* ]
+    branches: [ release ]
  
     branches: [ release, release1.0.0 ]
 
