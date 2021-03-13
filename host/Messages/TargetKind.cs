@@ -6,7 +6,7 @@
     public enum TargetKind
     {
         /// <summary>
-        /// Message is sent to all clients.
+        /// Message is sent to all connected clients. The targets array is ignored.
         /// </summary>
         All,
 

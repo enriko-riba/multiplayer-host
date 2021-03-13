@@ -195,7 +195,7 @@
         /// <returns></returns>
         private bool ShouldSaveUser(User user)
         {
-            return user.IsDirty && user.LastSaved.AddSeconds(60) < DateTime.UtcNow;
+            return user.IsDirty && user.LastSaved.AddSeconds(5) < DateTime.UtcNow;
         }
         
         private void ConnectionManager_PlayerConnected(object sender, PlayerConnectingArgs pc)
