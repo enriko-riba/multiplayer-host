@@ -8,7 +8,7 @@
         <Authors>Enriko Riba</Authors>
         <Company></Company>
         <Product>MultiplayerHost</Product>
-        <Description>The Multiplayer Host is a class library helping game developers implementing multiplayer game servers.</Description>
+        <Description>The Multiplayer Host is a class library providing core features for multiplayer game servers.</Description>
         <Copyright>(c) 2020-2021</Copyright>
         <PackageProjectUrl>https://github.com/enriko-riba/multiplayer-host/projects</PackageProjectUrl>
         <RepositoryUrl>https://github.com/enriko-riba/multiplayer-host</RepositoryUrl>
@@ -16,6 +16,7 @@
         <PackageLicenseExpression></PackageLicenseExpression>
         <PackageIcon>image-logo.png</PackageIcon>
         <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+        <Version>1.0.1</Version>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
       <DocumentationFile></DocumentationFile>
