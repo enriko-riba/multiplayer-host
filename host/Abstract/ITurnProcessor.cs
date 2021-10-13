@@ -14,8 +14,9 @@
         /// If no implementation is needed return <see cref="Task.CompletedTask"/>.
         /// </summary>
         /// <param name="tick">the server turn counter.</param>
+        /// <param name="ellapsedMilliseconds">ellapsed time in milliseconds since last turn</param>
         /// <returns></returns>
-        Task OnTurnStart(ulong tick);
+        Task OnTurnStart(ulong tick, int ellapsedMilliseconds);
 
         /// <summary>
         /// Invoked by the server for every message received from clients.
@@ -31,7 +32,7 @@
         /// Main game logic processing method. Invoked by the server for each user (both connected and disconnected).
         /// </summary>
         /// <param name="user"></param>
-        /// <param name="ellapsedMilliseconds"></param>
+        /// <param name="ellapsedMilliseconds">ellapsed time in milliseconds since last turn</param>
         /// <returns></returns>
         Task ProcessUserTurn(User user, int ellapsedMilliseconds);
 
