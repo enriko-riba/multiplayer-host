@@ -13,7 +13,7 @@ namespace MultiplayerHost.ReferenceGame
             return Task.CompletedTask;
         }
 
-        public Task OnTurnStart(ulong tick)
+        public Task OnTurnStart(ulong tick, int ellapsedMilliseconds)
         {
             return Task.CompletedTask;
         }

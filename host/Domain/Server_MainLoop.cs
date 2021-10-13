@@ -34,7 +34,7 @@
                 try
                 {
                     requestBuffer.SwapBuffers();
-                    await context.TurnProcessor.OnTurnStart(tickCounter);
+                    await context.TurnProcessor.OnTurnStart(tickCounter, ellapsedMilliseconds);
                     ProcessClientMessages();
                     await ProcessAllUsers(ellapsedMilliseconds);
                     await context.TurnProcessor.OnTurnComplete();
