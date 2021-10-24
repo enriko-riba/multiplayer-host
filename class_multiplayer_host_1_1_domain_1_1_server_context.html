@@ -80,12 +80,15 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ac4fa12f67de75be621d86aa174b04344"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_multiplayer_host_1_1_domain_1_1_server_context.html#ac4fa12f67de75be621d86aa174b04344">Configure</a> (<a class="el" href="interface_multiplayer_host_1_1_abstract_1_1_i_repository.html">IRepository</a> repository, <a class="el" href="interface_multiplayer_host_1_1_abstract_1_1_i_connection_manager.html">IConnectionManager</a> connectionManager, <a class="el" href="interface_multiplayer_host_1_1_abstract_1_1_i_turn_processor.html">ITurnProcessor</a> turnProcessor)</td></tr>
-<tr class="memdesc:ac4fa12f67de75be621d86aa174b04344"><td class="mdescLeft">&#160;</td><td class="mdescRight">Provides the context with the game logic components.  <a href="class_multiplayer_host_1_1_domain_1_1_server_context.html#ac4fa12f67de75be621d86aa174b04344">More...</a><br /></td></tr>
-<tr class="separator:ac4fa12f67de75be621d86aa174b04344"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af46add1822249397f760902a14c77fe2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_multiplayer_host_1_1_domain_1_1_server_context.html#af46add1822249397f760902a14c77fe2">Configure</a> (<a class="el" href="interface_multiplayer_host_1_1_abstract_1_1_i_repository.html">IRepository</a> repository, <a class="el" href="interface_multiplayer_host_1_1_abstract_1_1_i_connection_manager.html">IConnectionManager</a> connectionManager, <a class="el" href="interface_multiplayer_host_1_1_abstract_1_1_i_turn_processor.html">ITurnProcessor</a> turnProcessor, int turnTimeMillis)</td></tr>
+<tr class="memdesc:af46add1822249397f760902a14c77fe2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Provides the context with the game logic components.  <a href="class_multiplayer_host_1_1_domain_1_1_server_context.html#af46add1822249397f760902a14c77fe2">More...</a><br /></td></tr>
+<tr class="separator:af46add1822249397f760902a14c77fe2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="properties" name="properties"></a>
 Properties</h2></td></tr>
+<tr class="memitem:a6a45b01eaccad765840139535ed47ce0"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_multiplayer_host_1_1_domain_1_1_server_context.html#a6a45b01eaccad765840139535ed47ce0">TurnTimeMillis</a><code> [get]</code></td></tr>
+<tr class="memdesc:a6a45b01eaccad765840139535ed47ce0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Milliseconds per server turn.  <a href="class_multiplayer_host_1_1_domain_1_1_server_context.html#a6a45b01eaccad765840139535ed47ce0">More...</a><br /></td></tr>
+<tr class="separator:a6a45b01eaccad765840139535ed47ce0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9c96b3eee5c78d8dacbadf0cd0e83ed7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="interface_multiplayer_host_1_1_abstract_1_1_i_repository.html">IRepository</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_multiplayer_host_1_1_domain_1_1_server_context.html#a9c96b3eee5c78d8dacbadf0cd0e83ed7">Repository</a><code> [get]</code></td></tr>
 <tr class="memdesc:a9c96b3eee5c78d8dacbadf0cd0e83ed7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the configured repository.  <a href="class_multiplayer_host_1_1_domain_1_1_server_context.html#a9c96b3eee5c78d8dacbadf0cd0e83ed7">More...</a><br /></td></tr>
 <tr class="separator:a9c96b3eee5c78d8dacbadf0cd0e83ed7"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -105,8 +108,8 @@ Properties</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p >Provides a context for game logic execution. </p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="ac4fa12f67de75be621d86aa174b04344" name="ac4fa12f67de75be621d86aa174b04344"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac4fa12f67de75be621d86aa174b04344">&#9670;&nbsp;</a></span>Configure()</h2>
+<a id="af46add1822249397f760902a14c77fe2" name="af46add1822249397f760902a14c77fe2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af46add1822249397f760902a14c77fe2">&#9670;&nbsp;</a></span>Configure()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -130,7 +133,13 @@ Properties</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype"><a class="el" href="interface_multiplayer_host_1_1_abstract_1_1_i_turn_processor.html">ITurnProcessor</a>&#160;</td>
-          <td class="paramname"><em>turnProcessor</em>&#160;</td>
+          <td class="paramname"><em>turnProcessor</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>turnTimeMillis</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -151,6 +160,7 @@ Properties</h2></td></tr>
     <tr><td class="paramname">repository</td><td></td></tr>
     <tr><td class="paramname">connectionManager</td><td></td></tr>
     <tr><td class="paramname">turnProcessor</td><td></td></tr>
+    <tr><td class="paramname">turnTimeMillis</td><td>Milliseconds per server turn</td></tr>
   </table>
   </dd>
 </dl>
@@ -275,6 +285,30 @@ Properties</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Returns the configured turn processor. </p>
+
+</div>
+</div>
+<a id="a6a45b01eaccad765840139535ed47ce0" name="a6a45b01eaccad765840139535ed47ce0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6a45b01eaccad765840139535ed47ce0">&#9670;&nbsp;</a></span>TurnTimeMillis</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int MultiplayerHost.Domain.ServerContext.TurnTimeMillis</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">get</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Milliseconds per server turn. </p>
 
 </div>
 </div>
