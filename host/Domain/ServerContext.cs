@@ -29,6 +29,7 @@
             TurnProcessor = turnProcessor;
 
             if (turnTimeMillis < 10 || turnTimeMillis > MaxTurnTime) throw new System.ArgumentOutOfRangeException(nameof(turnTimeMillis), $"must be {MinTurnTime} - {MaxTurnTime}");
+            TurnTimeMillis = turnTimeMillis;
         }
 
         /// <summary>
