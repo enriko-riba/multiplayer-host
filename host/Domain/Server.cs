@@ -13,8 +13,6 @@
     /// </summary>
     public partial class Server : IServer
     {
-        private const int TICK_DURATION = 150;  //  TODO: make configurable
-
         private readonly RequestBuffer requestBuffer = new();
         private readonly ResponseBuffer responseBuffer = new();
         private readonly ServerContext context;
