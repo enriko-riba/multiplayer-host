@@ -19,7 +19,7 @@
         private async Task MainLoop()
         {
             Thread.CurrentThread.Name = nameof(MainLoop);
-            logger.LogInformation(nameof(MainLoop) + " started. Tick duration: {TickDuration}", TICK_DURATION);
+            logger.LogInformation(nameof(MainLoop) + " started. Tick duration: {TickDuration}", Context.TurnTimeMillis);
 
             var sw = new Stopwatch();
             sw.Start();
@@ -46,7 +46,7 @@
 
                 tickEnd = sw.ElapsedMilliseconds;
                 var duration = (int)(tickEnd - tickStart);
-                var sleepTimeMillis = Math.Max(TICK_DURATION - duration, 1);
+                var sleepTimeMillis = Math.Max(Context.TurnTimeMillis - duration, 0);
                 await Task.Delay(sleepTimeMillis);
             }
             logger.LogWarning(nameof(MainLoop) + " ended");

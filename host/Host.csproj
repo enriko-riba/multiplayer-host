@@ -16,7 +16,7 @@
         <PackageLicenseExpression></PackageLicenseExpression>
         <PackageIcon>image-logo.png</PackageIcon>
         <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-        <Version>1.1.0</Version>
+        <Version>1.2.0</Version>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <AnalysisLevel>latest</AnalysisLevel>
     </PropertyGroup>

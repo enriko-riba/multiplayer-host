@@ -7,6 +7,9 @@
     /// </summary>
     public class ServerContext
     {
+        private const int MinTurnTime = 10;
+        private const int MaxTurnTime = 60000;
+
         internal ServerContext(IServer server)
         {
             Server = server;
@@ -18,12 +21,20 @@
         /// <param name="repository"></param>
         /// <param name="connectionManager"></param>
         /// <param name="turnProcessor"></param>
-        public void Configure(IRepository repository, IConnectionManager connectionManager, ITurnProcessor turnProcessor)
+        /// <param name="turnTimeMillis">Milliseconds per server turn</param>
+        public void Configure(IRepository repository, IConnectionManager connectionManager, ITurnProcessor turnProcessor, int turnTimeMillis)
         {
             Repository = repository;
             ConnectionManager = connectionManager;
             TurnProcessor = turnProcessor;
+
+            if (turnTimeMillis < 10 || turnTimeMillis > MaxTurnTime) throw new System.ArgumentOutOfRangeException(nameof(turnTimeMillis), $"must be {MinTurnTime} - {MaxTurnTime}");
         }
+
+        /// <summary>
+        /// Milliseconds per server turn.
+        /// </summary>
+        public int TurnTimeMillis { get; private set; }
 
         /// <summary>
         /// Returns the configured repository.

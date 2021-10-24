@@ -29,7 +29,7 @@ namespace MultiplayerHost.ReferenceGame
         public async Task StartAsync(CancellationToken cancellationToken)
         {
             var context = server.Context;
-            context.Configure(repository, connMngr, turnProcessor);
+            context.Configure(repository, connMngr, turnProcessor, 100);
 
             //  after the server is started the following happens:
             //  1. The main loop and dispatcher are started on background threads
