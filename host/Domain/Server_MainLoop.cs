@@ -46,7 +46,7 @@
 
                 tickEnd = sw.ElapsedMilliseconds;
                 var duration = (int)(tickEnd - tickStart);
-                var sleepTimeMillis = Math.Max(Context.TurnTimeMillis - duration, 0);
+                var sleepTimeMillis = Math.Max(Context.TurnTimeMillis - duration, 1);
                 await Task.Delay(sleepTimeMillis);
             }
             logger.LogWarning(nameof(MainLoop) + " ended");
