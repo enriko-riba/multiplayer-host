@@ -1,4 +1,4 @@
-name: Build .NET 5 class library
+name: Build .NET 6 class library
 
 on:
   push:
@@ -15,10 +15,10 @@ jobs:
     - name: Git checkout
       uses: actions/checkout@v2
 
-    - name: Install .NET 5
+    - name: Install .NET 6
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 5.0.100
+        dotnet-version: 6.0.x
 
     - name: Restore
       run: dotnet restore MultiplayerHost.sln
