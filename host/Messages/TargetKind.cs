@@ -1,23 +1,22 @@
-﻿namespace MultiplayerHost.Messages
+﻿namespace MultiplayerHost.Messages;
+
+/// <summary>
+/// Defines how target user id's are interpreted during message sending.
+/// </summary>
+public enum TargetKind
 {
     /// <summary>
-    /// Defines how target user id's are interpreted during message sending.
+    /// Message is sent to all connected clients. The targets array is ignored.
     /// </summary>
-    public enum TargetKind
-    {
-        /// <summary>
-        /// Message is sent to all connected clients. The targets array is ignored.
-        /// </summary>
-        All,
+    All,
 
-        /// <summary>
-        /// Message is sent only to clients in the targets array.
-        /// </summary>
-        TargetList,
+    /// <summary>
+    /// Message is sent only to clients in the targets array.
+    /// </summary>
+    TargetList,
 
-        /// <summary>
-        /// Message is sent to all clients except to those in the targets array.
-        /// </summary>
-        AllExcept
-    }
+    /// <summary>
+    /// Message is sent to all clients except to those in the targets array.
+    /// </summary>
+    AllExcept
 }

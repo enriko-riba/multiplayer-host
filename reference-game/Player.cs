@@ -1,9 +1,8 @@
 ﻿using MultiplayerHost.Domain;
 
-namespace MultiplayerHost.ReferenceGame
+namespace MultiplayerHost.ReferenceGame;
+
+public class Player : User
 {
-    public class Player : User
-    {
-        public string DisplayName { get; set; }
-    }
+    public string DisplayName { get; set; }
 }

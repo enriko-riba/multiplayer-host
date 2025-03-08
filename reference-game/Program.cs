@@ -1,42 +1,36 @@
-﻿using System.Globalization;
+﻿
+using System.Globalization;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using MultiplayerHost.Abstract;
 using MultiplayerHost.Domain;
+using MultiplayerHost.ReferenceGame;
 
-namespace MultiplayerHost.ReferenceGame
-{
-    class Program
+
+CultureInfo.CurrentCulture = new CultureInfo("en-US", false);
+
+var host = Host.CreateDefaultBuilder(args)
+    .ConfigureLogging((builder) =>
     {
-        private static async Task Main(string[] args)
+        builder.AddSimpleConsole(options =>
         {
-            CultureInfo.CurrentCulture = new CultureInfo("en-US", false);
-            await CreateHostBuilder(args).Build().RunAsync();
-        }
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder()
-                .ConfigureLogging((builder) =>
-                {
-                    builder.AddSimpleConsole(options =>
-                    {
-                        options.IncludeScopes = true;
-                        options.SingleLine = true;
-                        options.TimestampFormat = "hh:mm:ss:fff ";
-                    });
-                })
+            options.IncludeScopes = true;
+            options.SingleLine = true;
+            options.TimestampFormat = "hh:mm:ss:fff ";
+        });
+    })
+    .ConfigureServices((hostContext, services) =>
+    {
+        services.AddSingleton(hostContext.Configuration);
+        services.AddSingleton<Application>();
+        services.AddSingleton<IConnectionManager, ConnectionManager>();
+        services.AddSingleton<IRepository, DummyRepository>();
+        services.AddSingleton<IServer, Server>();
+        services.AddSingleton<ITurnProcessor, GameLogic>();
+        services.AddHostedService<Application>();
+    })
+    .Build();
 
-                //.UseSerilog(CreateLogger())
-                .ConfigureServices((hostContext, services) =>
-                {
-                    services.AddSingleton(hostContext.Configuration);
-                    services.AddSingleton<Application>();
-                    services.AddSingleton<IConnectionManager, ConnectionManager>();
-                    services.AddSingleton<IRepository, DummyRepository>();
-                    services.AddSingleton<IServer, Server>();
-                    services.AddSingleton<ITurnProcessor, GameLogic>();
-                    services.AddHostedService<Application>();
-                });
-    }
-}
+await host.RunAsync();
