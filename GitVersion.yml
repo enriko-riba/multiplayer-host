@@ -1,15 +1,8 @@
 next-version: 1.3.0
-mode: ContinuousDelivery
-continuous-delivery-fallback-tag: ''
+mode: ContinuousDeployment
 branches:
   release:
-    regex: ^releases$
-    mode: ContinuousDeployment
-    increment: Minor
-    tag: ''
-    is-release-branch: true
+    regex: ^release$
+    tag: ""         # Remove any pre-release text
+    increment: Patch
     prevent-increment-of-merged-branch-version: true
-    commit-message-incrementing: Enabled
-ignore:
-  sha: []
-merge-message-formats: {}

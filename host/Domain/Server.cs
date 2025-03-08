@@ -18,8 +18,8 @@ public partial class Server : IServer
     private readonly ServerContext context;
     private readonly ILogger logger;
 
-    private Task dispatcherTask;
-    private Task mainLoopTask;
+    private Task? dispatcherTask;
+    private Task? mainLoopTask;
     private uint tickCounter;
 
     private readonly Dictionary<int, User> users = [];
@@ -38,7 +38,7 @@ public partial class Server : IServer
     /// <summary>
     /// Raised after the users are loaded and before the main loop has started.
     /// </summary>
-    public event EventHandler OnBeforeServerStart;
+    public event EventHandler? OnBeforeServerStart;
 
     /// <summary>
     /// Returns the server context.
