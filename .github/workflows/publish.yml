@@ -4,9 +4,9 @@ on:
   push:
     branches: [ release ]
     paths:
-      - 'host/**'    # Only trigger on changes to host project
+      - 'host/**'
       - '.github/workflows/publish.yml'
-  workflow_dispatch:  # Allow manual triggering
+  workflow_dispatch:
 
 jobs:  
   publish-nuget:
@@ -42,8 +42,30 @@ jobs:
         echo "Version: ${{ steps.gitversion.outputs.SemVer }}"
         echo "NuGet Version: ${{ steps.gitversion.outputs.NuGetVersion }}"
 
+    # Added diagnostic steps
+    - name: Directory structure
+      run: |
+        echo "Current directory structure:"
+        ls -R
+        
+    - name: Generate lock file
+      run: |
+        echo "Generating lock file..."
+        dotnet restore host/Host.csproj --force --use-lock-file
+        echo "Lock file status:"
+        ls -la host/packages.lock.json || echo "Lock file not found"
+        
+    - name: Set CI build flag
+      run: echo "ContinuousIntegrationBuild=true" >> $GITHUB_ENV
+
     - name: Restore host project
-      run: dotnet restore host/Host.csproj --use-lock-file
+      run: |
+        dotnet restore host/Host.csproj --force --use-lock-file
+        # Verify lock file existence
+        if [ ! -f "host/packages.lock.json" ]; then
+          echo "Error: Lock file was not generated"
+          exit 1
+        fi
 
     - name: Build host project
       run: dotnet build host/Host.csproj --configuration Release --no-restore
