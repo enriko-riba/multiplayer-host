@@ -10,7 +10,7 @@ namespace MultiplayerHost.ReferenceGame
     /// </summary>
     public class DummyRepository : IRepository
     {
-        private Dictionary<int, Player> playerList = new();
+        private readonly Dictionary<int, Player> playerList = [];
 
         public Task DeleteUserAsync(User user)
         {

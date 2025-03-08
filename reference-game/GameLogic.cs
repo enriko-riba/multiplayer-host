@@ -4,28 +4,27 @@ using MultiplayerHost.Abstract;
 using MultiplayerHost.Domain;
 using MultiplayerHost.Messages;
 
-namespace MultiplayerHost.ReferenceGame
+namespace MultiplayerHost.ReferenceGame;
+
+class GameLogic : ITurnProcessor
 {
-    class GameLogic : ITurnProcessor
+    public Task OnTurnComplete()
     {
-        public Task OnTurnComplete()
-        {
-            return Task.CompletedTask;
-        }
+        return Task.CompletedTask;
+    }
 
-        public Task OnTurnStart(ulong tick, int ellapsedMilliseconds)
-        {
-            return Task.CompletedTask;
-        }
+    public Task OnTurnStart(uint tick, int elapsedMilliseconds)
+    {
+        return Task.CompletedTask;
+    }
 
-        public void ProcessClientMessage(User user, in ClientMessage msg)
-        {
-            throw new NotImplementedException();
-        }
+    public void ProcessClientMessage(User user, in ClientMessage msg)
+    {
+        throw new NotImplementedException();
+    }
 
-        public Task ProcessUserTurn(User user, int ellapsedMilliseconds)
-        {
-            throw new NotImplementedException();
-        }
+    public Task ProcessUserTurn(User user, int elapsedMilliseconds)
+    {
+        throw new NotImplementedException();
     }
 }
