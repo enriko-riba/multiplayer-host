@@ -1,22 +1,8 @@
-mode: ContinuousDeployment
 next-version: 1.3.0
+mode: ContinuousDeployment
 branches:
-  main:
-    regex: ^main$
-    mode: ContinuousDeployment
-    increment: Patch
-    prevent-increment-of-merged-branch-version: true
   release:
-    regex: ^releases?[/-]
-    mode: ContinuousDeployment
-    increment: Minor
-    prevent-increment-of-merged-branch-version: true
-    track-merge-target: true
-  feature:
-    regex: ^features?[/-]
-    mode: ContinuousDeployment
-    increment: Inherit
-  hotfix:
-    regex: ^hotfix(es)?[/-]
+    regex: ^release$
+    tag: ""         # Remove any pre-release text
     increment: Patch
-    prevent-increment-of-merged-branch-version: false
+    prevent-increment-of-merged-branch-version: true
