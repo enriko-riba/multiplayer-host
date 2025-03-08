@@ -14,7 +14,7 @@
         <RepositoryUrl>https://github.com/enriko-riba/multiplayer-host</RepositoryUrl>
         <PackageTags>net9.0 c# gamedev</PackageTags>
         <PackageIcon>image-logo.png</PackageIcon>
-        <PackageReadmeFile>..\README.md</PackageReadmeFile>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
 
         <!-- Build Settings -->
         <AnalysisLevel>latest</AnalysisLevel>
@@ -27,7 +27,11 @@
 
     <ItemGroup>
         <None Remove=".editorconfig" />
-        <None Include="..\README.md" Pack="true" />
+        <!-- Include the README from the parent folder, but pack it as README.md at the package root -->
+        <None Include="..\README.md">
+            <Pack>True</Pack>
+            <PackagePath>README.md</PackagePath>
+        </None>
         <None Include="images\image-logo.png" Pack="true" PackagePath="" />
     </ItemGroup>
 
