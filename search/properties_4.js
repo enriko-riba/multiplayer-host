@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['playerid_0',['PlayerId',['../class_multiplayer_host_1_1_abstract_1_1_player_connecting_args.html#ac84b9bb22c8a67b0503797d029aa6f39',1,'MultiplayerHost::Abstract::PlayerConnectingArgs']]]
+  ['repository_0',['Repository',['../class_multiplayer_host_1_1_domain_1_1_server_context.html#a9c96b3eee5c78d8dacbadf0cd0e83ed7',1,'MultiplayerHost::Domain::ServerContext']]]
 ];

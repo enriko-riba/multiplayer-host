@@ -1,8 +1,5 @@
 var searchData=
 [
-  ['targetkind_0',['TargetKind',['../struct_multiplayer_host_1_1_messages_1_1_server_message.html#a96c94fc44a3c77fb4e0236f13132261c',1,'MultiplayerHost::Messages::ServerMessage']]],
-  ['targets_1',['Targets',['../struct_multiplayer_host_1_1_messages_1_1_server_message.html#a10e5d76f801f5cddac302030dc3736ac',1,'MultiplayerHost::Messages::ServerMessage']]],
-  ['tick_2',['Tick',['../struct_multiplayer_host_1_1_messages_1_1_server_message.html#a70938404a9b756da6fbbca1a6c5770cb',1,'MultiplayerHost::Messages::ServerMessage']]],
-  ['turnprocessor_3',['TurnProcessor',['../class_multiplayer_host_1_1_domain_1_1_server_context.html#ab2f512eab04688d99ee82965f30865a5',1,'MultiplayerHost::Domain::ServerContext']]],
-  ['turntimemillis_4',['TurnTimeMillis',['../class_multiplayer_host_1_1_domain_1_1_server_context.html#a6a45b01eaccad765840139535ed47ce0',1,'MultiplayerHost::Domain::ServerContext']]]
+  ['userid_0',['UserId',['../struct_multiplayer_host_1_1_messages_1_1_client_message.html#a6105f2cc0ddf19e46210e1f5b248b853',1,'MultiplayerHost::Messages::ClientMessage']]],
+  ['users_1',['Users',['../interface_multiplayer_host_1_1_abstract_1_1_i_server.html#acfc248397a79ad65ca30f7a44e55febd',1,'MultiplayerHost.Abstract.IServer.Users'],['../class_multiplayer_host_1_1_domain_1_1_server.html#a3c4afc03d0030909ef29b06c756d4724',1,'MultiplayerHost.Domain.Server.Users']]]
 ];
