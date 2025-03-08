@@ -3,6 +3,9 @@ name: Publish to NuGet
 on:
   push:
     branches: [ release ]
+    paths:
+      - 'host/**'    # Only trigger on changes to host project
+      - '.github/workflows/publish.yml'
   workflow_dispatch:  # Allow manual triggering
 
 jobs:  
@@ -38,39 +41,30 @@ jobs:
       run: |
         echo "Version: ${{ steps.gitversion.outputs.SemVer }}"
         echo "NuGet Version: ${{ steps.gitversion.outputs.NuGetVersion }}"
-        echo "Full Build Version: ${{ steps.gitversion.outputs.FullBuildMetaData }}"
 
-    # Modified restore step to generate lock files
-    - name: Restore dependencies
-      run: |
-        dotnet restore host/Host.csproj --use-lock-file --locked-mode=false
-        dotnet restore reference-game/ReferenceGame.csproj --use-lock-file --locked-mode=false
+    - name: Restore host project
+      run: dotnet restore host/Host.csproj --use-lock-file
 
-    - name: Build
-      run: dotnet build --configuration Release --no-restore
+    - name: Build host project
+      run: dotnet build host/Host.csproj --configuration Release --no-restore
 
-    - name: Test
-      run: dotnet test --configuration Release --no-build --verbosity normal
+    - name: Test host project
+      run: dotnet test host/Host.csproj --configuration Release --no-build --verbosity normal
 
-    - name: Pack with dotnet
+    - name: Pack host project
       run: dotnet pack host/Host.csproj --output nuget-packages --configuration Release --no-build -p:PackageVersion=${{ steps.gitversion.outputs.NuGetVersion }}
 
     - name: Verify package
       run: dotnet nuget verify nuget-packages/*.nupkg
 
     - name: Push to NuGet
-      uses: nuget/setup-nuget@v2
-      with:
-        nuget-api-key: ${{ secrets.NUGET_KEY }}
-        nuget-version: 'latest'
-    - run: |
-        for package in nuget-packages/*.nupkg; do
-          dotnet nuget push "$package" --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_KEY }} --skip-duplicate
-        done
+      run: |
+        dotnet nuget push "nuget-packages/*.nupkg" --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_KEY }} --skip-duplicate
 
-    - name: Archive NuGet packages
+    - name: Archive NuGet package
       uses: actions/upload-artifact@v4
       with:
         name: nuget-packages
         path: nuget-packages/*.nupkg
         retention-days: 30
+
