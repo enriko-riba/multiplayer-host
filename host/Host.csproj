@@ -13,7 +13,7 @@
         <RepositoryUrl>https://github.com/enriko-riba/multiplayer-host</RepositoryUrl>
         <PackageTags>net9.0 c# gamedev</PackageTags>
         <PackageIcon>image-logo.png</PackageIcon>
-        <PackageReadmeFile>..\README.md</PackageReadmeFile>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
 
         <!-- Build Settings -->
         <AnalysisLevel>latest</AnalysisLevel>
