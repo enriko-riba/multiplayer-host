@@ -26,7 +26,6 @@ jobs:
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 9.0.x
-        global-json-file: false    # Added to prevent looking for global.json
 
     # Add separate caching step
     - name: Cache NuGet packages
