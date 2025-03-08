@@ -3,34 +3,34 @@
         <TargetFramework>net9.0</TargetFramework>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <RootNamespace>MultiplayerHost</RootNamespace>
-        <Nullable>disable</Nullable>
+        <Nullable>enable</Nullable>
+
+        <!-- NuGet Package Properties -->
         <PackageId>MultiplayerHost</PackageId>
         <Authors>Enriko Riba</Authors>
-        <Company></Company>
-        <Product>MultiplayerHost</Product>
         <Description>The Multiplayer Host is a class library providing core features for multiplayer game servers.</Description>
         <Copyright>(c) 2020-2025</Copyright>
         <PackageProjectUrl>https://github.com/enriko-riba/multiplayer-host/projects</PackageProjectUrl>
         <RepositoryUrl>https://github.com/enriko-riba/multiplayer-host</RepositoryUrl>
         <PackageTags>net9.0 c# gamedev</PackageTags>
         <PackageIcon>image-logo.png</PackageIcon>
-        <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
         <PackageReadmeFile>README.md</PackageReadmeFile>
+
+        <!-- Build Settings -->
         <AnalysisLevel>latest</AnalysisLevel>
         <DebugType>embedded</DebugType>
-        <Version>1.3.0</Version>
+
+        <!-- Package Restore Settings -->
+        <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+        <RestoreLockedMode Condition="'$(ContinuousIntegrationBuild)' == 'true'">true</RestoreLockedMode>
     </PropertyGroup>
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-      <DocumentationFile></DocumentationFile>
-    </PropertyGroup>
+
     <ItemGroup>
         <None Remove=".editorconfig" />
-        <None Include="..\README.md">
-          <Pack>True</Pack>
-          <PackagePath></PackagePath>
-        </None>
+        <None Include="..\README.md" Pack="true" />
         <None Include="images\image-logo.png" Pack="true" PackagePath="" />
     </ItemGroup>
+
     <ItemGroup>
         <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.2" />
     </ItemGroup>

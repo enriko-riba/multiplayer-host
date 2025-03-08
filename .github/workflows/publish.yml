@@ -15,52 +15,49 @@ jobs:
     
     steps:
     - name: Git checkout
-      uses: actions/checkout@v4    # Updated from v2
+      uses: actions/checkout@v4
       with:
         fetch-depth: 0
 
     - name: Setup .NET 9
-      uses: actions/setup-dotnet@v4    # Updated from v1
+      uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 9.0.x
-        cache: true    # Enable SDK caching
+        cache: true
 
     - name: Install GitVersion
-      uses: gittools/actions/gitversion/setup@v0.11.0    # Updated from v0.9.7
+      uses: gittools/actions/gitversion/setup@v0.11.0
       with:
         versionSpec: '5.x'
 
     - name: Use GitVersion
       id: gitversion
-      uses: gittools/actions/gitversion/execute@v0.11.0    # Updated from v0.9.7
+      uses: gittools/actions/gitversion/execute@v0.11.0
 
-    # Simplified version output - keep only essential ones
     - name: Output version info
       run: |
         echo "Version: ${{ steps.gitversion.outputs.SemVer }}"
         echo "NuGet Version: ${{ steps.gitversion.outputs.NuGetVersion }}"
         echo "Full Build Version: ${{ steps.gitversion.outputs.FullBuildMetaData }}"
 
+    # Modified restore step to generate lock files
     - name: Restore dependencies
       run: |
-        dotnet restore host/Host.csproj
-        dotnet restore reference-game/ReferenceGame.csproj
+        dotnet restore host/Host.csproj --use-lock-file --locked-mode=false
+        dotnet restore reference-game/ReferenceGame.csproj --use-lock-file --locked-mode=false
 
     - name: Build
       run: dotnet build --configuration Release --no-restore
 
-    # Added testing step
     - name: Test
       run: dotnet test --configuration Release --no-build --verbosity normal
 
     - name: Pack with dotnet
       run: dotnet pack host/Host.csproj --output nuget-packages --configuration Release --no-build -p:PackageVersion=${{ steps.gitversion.outputs.NuGetVersion }}
 
-    # Added package verification
     - name: Verify package
       run: dotnet nuget verify nuget-packages/*.nupkg
 
-    # Added retry logic for push
     - name: Push to NuGet
       uses: nuget/setup-nuget@v2
       with:
@@ -71,7 +68,6 @@ jobs:
           dotnet nuget push "$package" --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_KEY }} --skip-duplicate
         done
 
-    # Added artifacts archiving
     - name: Archive NuGet packages
       uses: actions/upload-artifact@v4
       with:
