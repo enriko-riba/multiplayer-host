@@ -1,4 +1,4 @@
-name: Build .NET 6 class library
+name: Build .NET 9 class library
 
 on:
   push:
