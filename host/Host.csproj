@@ -9,16 +9,16 @@
         <Company></Company>
         <Product>MultiplayerHost</Product>
         <Description>The Multiplayer Host is a class library providing core features for multiplayer game servers.</Description>
-        <Copyright>(c) 2020-2022</Copyright>
+        <Copyright>(c) 2020-2025</Copyright>
         <PackageProjectUrl>https://github.com/enriko-riba/multiplayer-host/projects</PackageProjectUrl>
         <RepositoryUrl>https://github.com/enriko-riba/multiplayer-host</RepositoryUrl>
-        <PackageTags>net6.0 c# gamedev</PackageTags>
+        <PackageTags>net9.0 c# gamedev</PackageTags>
         <PackageIcon>image-logo.png</PackageIcon>
         <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <AnalysisLevel>latest</AnalysisLevel>
         <DebugType>embedded</DebugType>
-        <Version>1.2.8</Version>
+        <Version>1.3.0</Version>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
       <DocumentationFile></DocumentationFile>
