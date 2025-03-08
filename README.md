@@ -1,7 +1,7 @@
 # Multiplayer Host
 ![project logo](host/images/image.png)
 
-![.NET 9](https://github.com/enriko-riba/multiplayer-host/workflows/.NET%20Core/badge.svg)
+[![Build .NET 9 class library](https://github.com/enriko-riba/multiplayer-host/actions/workflows/build.yml/badge.svg)](https://github.com/enriko-riba/multiplayer-host/actions/workflows/build.yml)
 
 ## Overview
 The **Multiplayer Host** is a class library helping game developers implementing multiplayer game servers. It exposes a **Server** component 
