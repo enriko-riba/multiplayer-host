@@ -9,5 +9,4 @@ branches:
     track-merge-target: true
     is-release-branch: true    
     is-mainline: true
-    increment-patch: true
     commit-message-incrementing: Enabled
