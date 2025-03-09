@@ -74,19 +74,19 @@ public interface IServer
     /// <summary>
     /// Creates a server message and sends it to clients based on the <see cref="TargetKind"/> and targets combination.
     /// </summary>
-    /// <param name="opCode"></param>
-    /// <param name="targets"></param>
+    /// <param name="opCode">Game specific code.</param>
+    /// <param name="targets">user IDs to which the message gets dispatched.</param>
     /// <param name="targetKind"></param>
-    /// <param name="payload"></param>
+    /// <param name="payload">Game and opCode specific payload.</param>
     void CreateServerMessage(int opCode, int[] targets, TargetKind targetKind, string payload);
 
     /// <summary>
     /// Creates a server message and sends it to clients based on the <see cref="TargetKind"/> and target combination.
     /// </summary>
-    /// <param name="opCode"></param>
-    /// <param name="target"></param>
+    /// <param name="opCode">Game logic specific code.</param>
+    /// <param name="target">user ID to whom the message gets dispatched.</param>
     /// <param name="targetKind"></param>
-    /// <param name="payload"></param>
+    /// <param name="payload">Game and opCode specific payload.</param>
     void CreateServerMessage(int opCode, int target, TargetKind targetKind, string payload);
 
     /// <summary>

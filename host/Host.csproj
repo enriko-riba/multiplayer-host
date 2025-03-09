@@ -1,7 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <TargetFramework>net9.0</TargetFramework>
-        <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <RootNamespace>MultiplayerHost</RootNamespace>
         <Nullable>enable</Nullable>
 
@@ -19,6 +18,8 @@
         <!-- Build Settings -->
         <AnalysisLevel>latest</AnalysisLevel>
         <DebugType>embedded</DebugType>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <DocumentationFile>bin\Release\net9.0\Host.xml</DocumentationFile>
 
         <!-- Package Restore Settings -->
         <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>

@@ -120,26 +120,17 @@ public partial class Server : IServer
             context.Repository.DeleteUserAsync(user);
         }
     }
-
     /// <summary>
-    /// Helper function to create and enqueue a server 2 client message.
-    /// </summary>
-    /// <param name="opCode">Game logic specific code.</param>
-    /// <param name="target"></param>
-    /// <param name="targetKind"></param>
-    /// <param name="payload"></param>
+    /// <inheritdoc/>
+    /// </summary>   
     public void CreateServerMessage(int opCode, int target, TargetKind targetKind, string payload)
     {
         CreateServerMessage(opCode, [target], targetKind, payload);
     }
 
     /// <summary>
-    /// Helper function to create and enqueue a server 2 client message.
-    /// </summary>
-    /// <param name="opCode"></param>
-    /// <param name="targets"></param>
-    /// <param name="targetKind"></param>
-    /// <param name="payload"></param>
+    /// <inheritdoc/>
+    /// </summary>    
     public void CreateServerMessage(int opCode, int[] targets, TargetKind targetKind, string payload)
     {
         var msg = new ServerMessage()
