@@ -2,6 +2,11 @@ next-version: 1.3.0
 mode: ContinuousDeployment
 branches: 
   release:
+    regex: ^release$
     increment: Patch
-    tag: ""  # ensures no pre-release text is appended
-    is-release-branch: true
+    tag: ""
+    prevent-increment-of-merged-branch-version: false
+    track-merge-target: true
+    tracks-release-branches: false
+    is-release-branch: true    
+    is-mainline: true
