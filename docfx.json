@@ -1,0 +1,34 @@
+{
+  "metadata": [
+    {
+      "src": [
+        {
+          "files": [ "host/Host.csproj" ],
+          "exclude": [ "**/bin/**", "**/obj/**" ]
+        }
+      ],
+      "dest": "api"
+    }
+  ],
+  "build": {
+    "content": [
+      {
+        "files": [ "index.md", "README.md", "**/*.md" ]
+      },
+      {
+        "files": [ "api/**.yml" ]
+      }
+    ],
+    "dest": "_site",
+    "globalMetadata": {
+      "_enableSearch": true
+    },
+    "template": [
+      "default"
+    ],
+    "markdownEngineName": "dfm",
+    "markdownEngineProperties": {
+      "EnableInclude": true
+    }
+  }
+}
