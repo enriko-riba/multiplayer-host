@@ -1,12 +1,9 @@
 next-version: 1.3.0
-mode: ContinuousDeployment
+mode: ContinuousDelivery
 branches: 
   release:
     regex: ^release$
     increment: Patch
     tag: ""
-    prevent-increment-of-merged-branch-version: false
-    track-merge-target: true
-    is-release-branch: true    
-    is-mainline: true
     commit-message-incrementing: Enabled
+    is-release-branch: true
