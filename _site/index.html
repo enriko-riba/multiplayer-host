@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>Welcome </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="Welcome ">
+    
+    
+      <link rel="shortcut icon" href="favicon.ico">
+      <link rel="stylesheet" href="styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="styles/docfx.css">
+      <link rel="stylesheet" href="styles/main.css">
+      <meta property="docfx:navrel" content="">
+      <meta property="docfx:tocrel" content="">
+    
+    <meta property="docfx:rel" content="">
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="index.html">
+                <img id="logo" class="svg" src="logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div class="container body-content">
+
+        <div id="search-results">
+          <div class="search-list">Search Results for <span></span></div>
+          <div class="sr-items">
+            <p><i class="glyphicon glyphicon-refresh index-loading"></i></p>
+          </div>
+          <ul id="pagination" data-first=First data-prev=Previous data-next=Next data-last=Last></ul>
+        </div>
+      </div>
+      <div role="main" class="container body-content hide-when-search">
+        <div class="article row grid">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="multiplayer-host">Multiplayer Host</h1>
+
+<p><img src="host/images/image.png" alt="project logo"></p>
+<p><a href="https://github.com/enriko-riba/multiplayer-host/actions/workflows/build.yml"><img src="https://github.com/enriko-riba/multiplayer-host/actions/workflows/build.yml/badge.svg" alt="Build .NET 9 class library"></a></p>
+<h2 id="overview">Overview</h2>
+<p>The <strong>Multiplayer Host</strong> is a class library helping game developers implementing multiplayer game servers. It exposes a <strong>Server</strong> component
+that streamlines message handling, message buffering, user state handling and invoking the game implementation layer.
+The Server component does not contain any game specific logic. Game developers deal with the game logic by implementing several interfaces
+invoked by the server component.</p>
+<p>The goal of this project is to create a framework for streamlining the game backend development.</p>
+<h2 id="high-level-architecture">High level architecture</h2>
+<p><img src="host/images/conceptual-diagram.png" alt="project logo"></p>
+<h3 id="multiplayer-host-implements">Multiplayer Host implements</h3>
+<ul>
+<li>abstract User class and user management</li>
+<li>main game loop</li>
+<li>message dispatcher loop</li>
+<li>client message double buffering (accepts new incoming messages simultaneously with turn processing)</li>
+<li>server message buffering</li>
+<li>dedicated background threads for the main loop and message dispatcher</li>
+<li>public IServer api supporting basic server operations, queuing client messages and creating response messages</li>
+</ul>
+<h3 id="multiplayer-host-does-not-implement">Multiplayer Host does not implement</h3>
+<ul>
+<li>a real game - although a minimalistic reference game (server and client) is provided for test purposes</li>
+<li>any kind of game specific logic</li>
+<li>any kind of client connectivity</li>
+<li>any kind of data storage</li>
+<li>anything related to game clients</li>
+</ul>
+<h1 id="components">Components</h1>
+<p>The server requires external components providing the following interfaces:</p>
+<ul>
+<li><strong><code>IConnectionManager</code></strong>, providing client connection management and message sending/receiving</li>
+<li><strong><code>IRepository</code></strong>, providing game persistence</li>
+<li><strong><code>ITurnProcessor</code></strong>, providing the game logic</li>
+<li>in addition the host implements the <strong><code>IServer</code></strong> to be used by other components to control and communicate with the server</li>
+</ul>
+<h2 id="turn-processing">Turn processing</h2>
+<p>The server uses the <code>ITurnProcessor</code> interface to invoke game specific logic. The turn processors methods are invoked in the following order:</p>
+<ol>
+<li><code>ITurnProcessor.ProcessClientMessage(User user, in ClientMessage message);</code> invoked once for every received client message</li>
+<li><code>ITurnProcessor.ProcessUserTurn(User user, int ellapsedMilliseconds);</code> invoked once per turn for every user (both online and offline)</li>
+<li><code>ITurnProcessor.OnTurnComplete();</code> invoked once per turn after all messages and users have been processed</li>
+</ol>
+<h1 id="quickstart">Quickstart</h1>
+<ol>
+<li>create a game specific user entity inheriting from <code>MultiplayerHost.Domain.User</code></li>
+</ol>
+<pre><code class="lang-cs">public class Player : User
+{
+    public int Diamond { get; internal set; }
+    public int Gold { get; internal set; }
+    public int Reputation { get; internal set; }
+    ...
+}
+</code></pre>
+<ol start="2">
+<li>implement the three mandatory interfaces: <code>IConnectionManager</code>, <code>IRepository</code> and <code>ITurnProcessor</code>.
+Note: for testing purposes a single class could implement all of them. When dealing with users inside your game logic, make sure to cast the provided User instance into your specific user entity class.
+The server will only use the IRepository interface to save the user state. If you need to persist additional state you must implement it as part of your game logic.</li>
+<li>Implement client messages and corresponding parsers/handlers, define server messages and specify their payload format</li>
+<li>obtain an IServer reference, grab the context and provide the interface implementations</li>
+</ol>
+<pre><code class="lang-cs">IServer server;
+var context = server.Context;
+context.Configure(repository, connMngr, turnProcessor);
+// optionally subscribe for initial game setup: context.Server.OnBeforeServerStart += OnServerStart;
+</code></pre>
+<ol start="5">
+<li>start the server</li>
+</ol>
+<pre><code class="lang-cs">await server.Start();
+</code></pre>
+<ol start="6">
+<li>The server starts invoking the turn processing logic</li>
+<li>You also need a client capable of exchanging messages with your IConnectionManager implementation</li>
+</ol>
+<p><strong>Note</strong>: The multiplayer game server is easiest to be used with a DI container. Consult the reference game server project how to setup DI in a console application.</p>
+<h1 id="api-documentation">API Documentation</h1>
+<p>See the <a href="api/MultiplayerHost.Abstract.html">API documentation here</a>.</p>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/enriko-riba/multiplayer-host/blob/56/merge/index.md/#L1" class="contribution-link">Edit this page</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+                <h5>In this article</h5>
+                <div></div>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      
+      <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="styles/docfx.js"></script>
+    <script type="text/javascript" src="styles/main.js"></script>
+  </body>
+</html>

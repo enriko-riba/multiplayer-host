@@ -1,5 +1,0 @@
-var searchData=
-[
-  ['configure_0',['Configure',['../class_multiplayer_host_1_1_domain_1_1_server_context.html#af46add1822249397f760902a14c77fe2',1,'MultiplayerHost::Domain::ServerContext']]],
-  ['createservermessage_1',['CreateServerMessage',['../interface_multiplayer_host_1_1_abstract_1_1_i_server.html#a605955a394611c1e427fba0b70c9808e',1,'MultiplayerHost.Abstract.IServer.CreateServerMessage(int opCode, int[] targets, TargetKind targetKind, string payload)'],['../interface_multiplayer_host_1_1_abstract_1_1_i_server.html#a69cabd9dd6f2ca8c22cf741462e88b01',1,'MultiplayerHost.Abstract.IServer.CreateServerMessage(int opCode, int target, TargetKind targetKind, string payload)'],['../class_multiplayer_host_1_1_domain_1_1_server.html#a8bd48bec273edccc338b3dd7d4beecc7',1,'MultiplayerHost.Domain.Server.CreateServerMessage(int opCode, int target, TargetKind targetKind, string payload)'],['../class_multiplayer_host_1_1_domain_1_1_server.html#ab08e1f19780c17d3892b02116ad81485',1,'MultiplayerHost.Domain.Server.CreateServerMessage(int opCode, int[] targets, TargetKind targetKind, string payload)']]]
-];
