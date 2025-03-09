@@ -51,7 +51,7 @@ jobs:
         run: dotnet test host/Host.csproj --configuration Release --no-build --verbosity normal
 
       - name: Pack host project
-        run: dotnet pack host/Host.csproj --output nuget-packages --configuration Release --no-build -p:PackageVersion=${{ steps.gitversion.outputs.MajorMinorPatch }}
+        run: dotnet pack host/Host.csproj --output nuget-packages --configuration Release --no-build -p:PackageVersion=${{ steps.gitversion.outputs.FullSemVer }}
 
       - name: Push to NuGet
         run: |
