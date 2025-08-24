@@ -7,6 +7,15 @@ using MultiplayerHost.Domain;
 using MultiplayerHost.Messages;
 
 /// <summary>
+/// delegate for async event handlers.
+/// </summary>
+/// <typeparam name="TEventArgs"></typeparam>
+/// <param name="sender"></param>
+/// <param name="e"></param>
+/// <returns></returns>
+public delegate Task AsyncEventHandler<in TEventArgs>(object? sender, TEventArgs e);
+
+/// <summary>
 /// Supports server operations. 
 /// </summary>
 public interface IServer
@@ -15,7 +24,12 @@ public interface IServer
     /// Raised after the server is initialized and all users loaded but before the main processing loop has started.
     /// </summary>
     event EventHandler OnBeforeServerStart;
-    
+
+    /// <summary>
+    /// Raised after the server is initialized and all users loaded but before the main processing loop has started.
+    /// </summary>
+    event AsyncEventHandler<EventArgs>? OnBeforeServerStartAsync;
+
     /// <summary>
     /// Starts the server main processing loop and message dispatcher.
     /// Note: throws if the <see cref="ServerContext"/> is not configured.
@@ -63,7 +77,7 @@ public interface IServer
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    User GetUserById(int id);
+    User? GetUserById(int id);
 
     /// <summary>
     /// Stores an incoming client message to the processing queue.
