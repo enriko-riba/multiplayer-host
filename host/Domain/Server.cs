@@ -35,24 +35,19 @@ public partial class Server : IServer
     }
 
     #region IServer implementation
-    /// <summary>
-    /// Raised after the users are loaded and before the main loop has started.
-    /// </summary>
+    /// <inheritdoc />
     public event EventHandler? OnBeforeServerStart;
 
-    /// <summary>
-    /// Returns the server context.
-    /// </summary>
+    /// <inheritdoc />    
+    public event AsyncEventHandler<EventArgs>? OnBeforeServerStartAsync;
+    
+    /// <inheritdoc />
     public ServerContext Context => context;
 
-    /// <summary>
-    /// Returns true if the server is running.
-    /// </summary>
+    /// <inheritdoc />
     public bool IsRunning { get; private set; }
 
-    /// <summary>
-    /// Starts the server.
-    /// </summary>
+    /// <inheritdoc />
     public async Task Start()
     {
         logger.LogInformation("starting server...");
@@ -60,7 +55,7 @@ public partial class Server : IServer
         if (IsRunning) throw new Exception("Already running");
         if (!context.IsContextValid) throw new Exception("ServerContext is not valid");
 
-        context.ConnectionManager.PlayerConnecting += ConnectionManager_PlayerConnected;
+        context.ConnectionManager.PlayerConnecting += ConnectionManager_PlayerConnecting;
         context.ConnectionManager.PlayerDisconnected += ConnectionManager_PlayerDisconnected;
 
         //  load all users
@@ -74,6 +69,7 @@ public partial class Server : IServer
         //  signal server start
         var handler = OnBeforeServerStart;
         handler?.Invoke(this, EventArgs.Empty);
+        await InvokeAsync(OnBeforeServerStartAsync, this, EventArgs.Empty);
 
         //  start background processes
         IsRunning = true;
@@ -86,9 +82,7 @@ public partial class Server : IServer
         logger.LogInformation("multiplayer host server is up & running!");
     }
 
-    /// <summary>
-    /// Stops the server.
-    /// </summary>
+    /// <inheritdoc />
     public void Stop()
     {
         logger.LogWarning("stopping server...");
@@ -98,20 +92,14 @@ public partial class Server : IServer
         logger.LogWarning("server stopped!");
     }
 
-    /// <summary>
-    /// Adds a new user to the game.
-    /// </summary>
-    /// <param name="user"></param>
+    /// <inheritdoc />
     public void AddUser(User user)
     {
         logger.LogInformation("{@User}", user);
         users.Add(user.Id, user);
     }
 
-    /// <summary>
-    /// Removes the user from the game.
-    /// </summary>
-    /// <param name="user"></param>
+    /// <inheritdoc />
     public void RemoveUser(User user)
     {
         logger.LogWarning("{@User}", user);
@@ -120,17 +108,14 @@ public partial class Server : IServer
             context.Repository.DeleteUserAsync(user);
         }
     }
-    /// <summary>
-    /// <inheritdoc/>
-    /// </summary>   
+
+    /// <inheritdoc />
     public void CreateServerMessage(int opCode, int target, TargetKind targetKind, string payload)
     {
         CreateServerMessage(opCode, [target], targetKind, payload);
     }
 
-    /// <summary>
-    /// <inheritdoc/>
-    /// </summary>    
+    /// <inheritdoc />
     public void CreateServerMessage(int opCode, int[] targets, TargetKind targetKind, string payload)
     {
         var msg = new ServerMessage()
@@ -145,36 +130,40 @@ public partial class Server : IServer
         responseBuffer.Write(in msg);
     }
 
-    /// <summary>
-    /// Enqueues the client message for server side processing.
-    /// </summary>
-    /// <param name="message"></param>
+    /// <inheritdoc />
     public void EnqueueClientMessage(in ClientMessage message)
     {
         requestBuffer.Write(in message);
     }
 
-    /// <summary>
-    /// Returns the user collection.
-    /// </summary>
+    /// <inheritdoc />
     public IEnumerable<User> Users => this.users.Values;
 
-    /// <summary>
-    /// Returns the filtered user collection.
-    /// </summary>
+    /// <inheritdoc />
     public IEnumerable<User> FilterUsers(Predicate<User> p) => this.users.Values.Where(u => p(u));
 
-    /// <summary>
-    /// Gets the user by id.
-    /// </summary>
-    /// <param name="id"></param>
-    /// <returns></returns>
-    public User GetUserById(int id)
+    /// <inheritdoc />
+    public User? GetUserById(int id)
     {
         users.TryGetValue(id, out var user);
         return user;
     }
     #endregion
+      
+    /// <summary>
+    /// Helper to await all subscribers.
+    /// </summary>
+    /// <param name="evt"></param>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    /// <returns></returns>
+    private static Task InvokeAsync(AsyncEventHandler<EventArgs>? evt, object? sender, EventArgs e) =>
+        evt is null
+            ? Task.CompletedTask
+            : Task.WhenAll(evt.GetInvocationList()
+                              .Cast<AsyncEventHandler<EventArgs>>()
+                              .Select(h => h(sender, e)));
+
 
     /// <summary>
     /// If true the user will be saved to repository.
@@ -186,8 +175,15 @@ public partial class Server : IServer
     {
         return user.IsDirty && user.LastSaved.AddSeconds(5) < DateTime.UtcNow;
     }
-    
-    private void ConnectionManager_PlayerConnected(object sender, PlayerConnectingArgs pc)
+
+    /// <summary>
+    /// Handler for the <see cref="IConnectionManager.PlayerConnecting"/> event.
+    /// Setups the user online state and logs the connection.
+    /// Note: if the user is not found in the 
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="pc"></param>
+    private void ConnectionManager_PlayerConnecting(object sender, PlayerConnectingArgs pc)
     {
         if (users.TryGetValue(pc.PlayerId, out var user))
         {
