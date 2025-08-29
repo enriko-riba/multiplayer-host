@@ -18,9 +18,9 @@ namespace MultiplayerHost.ReferenceGame
             return Task.CompletedTask;
         }
 
-        public Task<User> GetUserAsync(int userId)
+        public Task<User?> GetUserAsync(int userId)
         {
-            return Task.FromResult<User>(playerList[userId]);
+            return Task.FromResult<User?>(playerList[userId]);
         }
 
         public Task<IEnumerable<User>> GetUsers()
