@@ -22,7 +22,7 @@ public interface IRepository
     /// </summary>
     /// <param name="userId"></param>
     /// <returns></returns>
-    Task<User> GetUserAsync(int userId);
+    Task<User?> GetUserAsync(int userId);
 
     /// <summary>
     /// Saves the user to the persistence layer.
