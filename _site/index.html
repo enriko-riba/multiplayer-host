@@ -73,7 +73,7 @@
 <h1 id="multiplayer-host">Multiplayer Host</h1>
 
 <p><img src="host/images/image.png" alt="project logo"></p>
-<p><a href="https://github.com/enriko-riba/multiplayer-host/actions/workflows/build.yml"><img src="https://github.com/enriko-riba/multiplayer-host/actions/workflows/build.yml/badge.svg" alt="Build .NET 9 class library"></a></p>
+<p><a href="https://github.com/enriko-riba/multiplayer-host/actions/workflows/build.yml"><img src="https://github.com/enriko-riba/multiplayer-host/actions/workflows/build.yml/badge.svg" alt="Build .NET 10 class library"></a></p>
 <h2 id="overview">Overview</h2>
 <p>The <strong>Multiplayer Host</strong> is a class library helping game developers implementing multiplayer game servers. It exposes a <strong>Server</strong> component
 that streamlines message handling, message buffering, user state handling and invoking the game implementation layer.
@@ -112,9 +112,24 @@ invoked by the server component.</p>
 <p>The server uses the <code>ITurnProcessor</code> interface to invoke game specific logic. The turn processors methods are invoked in the following order:</p>
 <ol>
 <li><code>ITurnProcessor.ProcessClientMessage(User user, in ClientMessage message);</code> invoked once for every received client message</li>
-<li><code>ITurnProcessor.ProcessUserTurn(User user, int ellapsedMilliseconds);</code> invoked once per turn for every user (both online and offline)</li>
+<li><code>ITurnProcessor.ProcessUserTurn(User user, int elapsedMilliseconds);</code> invoked once per turn for every user (both online and offline)</li>
 <li><code>ITurnProcessor.OnTurnComplete();</code> invoked once per turn after all messages and users have been processed</li>
 </ol>
+<h2 id="runtime-and-lifecycle-expectations">Runtime and lifecycle expectations</h2>
+<ul>
+<li>Configure the server context before calling <code>Start()</code>.</li>
+<li><code>Start()</code> loads the active users, raises the startup callbacks, and then begins the background main loop and dispatcher loop.</li>
+<li><code>StopAsync()</code> is the preferred shutdown API. The compatibility <code>Stop()</code> wrapper blocks until the asynchronous shutdown completes.</li>
+<li><code>ITurnProcessor</code> callbacks run on the server background loop, so implementations should avoid blocking work and keep their own shared state thread-safe.</li>
+<li>Outbound server messages are timestamped with UTC ticks, and dispatcher shutdown drains queued outbound messages before the stop operation completes.</li>
+<li>Dirty users are persisted on the host save interval (currently 5 seconds) rather than on every turn.</li>
+</ul>
+<h2 id="message-contracts">Message contracts</h2>
+<ul>
+<li><code>ClientMessage</code> and <code>ServerMessage</code> payloads are owned by the game implementation and should be treated as non-null application data.</li>
+<li><code>ServerMessage.Targets</code> is interpreted together with <code>TargetKind</code>; use an empty target array when broadcasting to all users.</li>
+<li>Message timestamps should use UTC-based values when the game implementation sets them.</li>
+</ul>
 <h1 id="quickstart">Quickstart</h1>
 <ol>
 <li>create a game specific user entity inheriting from <code>MultiplayerHost.Domain.User</code></li>
@@ -136,7 +151,7 @@ The server will only use the IRepository interface to save the user state. If yo
 </ol>
 <pre><code class="lang-cs">IServer server;
 var context = server.Context;
-context.Configure(repository, connMngr, turnProcessor);
+context.Configure(repository, connMngr, turnProcessor, turnTimeMillis: 50);
 // optionally subscribe for initial game setup: context.Server.OnBeforeServerStart += OnServerStart;
 </code></pre>
 <ol start="5">
@@ -146,6 +161,11 @@ context.Configure(repository, connMngr, turnProcessor);
 </code></pre>
 <ol start="6">
 <li>The server starts invoking the turn processing logic</li>
+<li>stop the server gracefully when the host application shuts down</li>
+</ol>
+<pre><code class="lang-cs">await server.StopAsync();
+</code></pre>
+<ol start="8">
 <li>You also need a client capable of exchanging messages with your IConnectionManager implementation</li>
 </ol>
 <p><strong>Note</strong>: The multiplayer game server is easiest to be used with a DI container. Consult the reference game server project how to setup DI in a console application.</p>
@@ -160,7 +180,7 @@ context.Configure(repository, connMngr, turnProcessor);
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/enriko-riba/multiplayer-host/blob/main/index.md/#L1" class="contribution-link">Edit this page</a>
+                    <a href="https://github.com/enriko-riba/multiplayer-host/blob/67/merge/index.md/#L1" class="contribution-link">Edit this page</a>
                   </li>
                 </ul>
               </div>

@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>Multiplayer Host Improvements Plan </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="Multiplayer Host Improvements Plan ">
+    
+    
+      <link rel="shortcut icon" href="favicon.ico">
+      <link rel="stylesheet" href="styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="styles/docfx.css">
+      <link rel="stylesheet" href="styles/main.css">
+      <meta property="docfx:navrel" content="">
+      <meta property="docfx:tocrel" content="">
+    
+    <meta property="docfx:rel" content="">
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="index.html">
+                <img id="logo" class="svg" src="logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div class="container body-content">
+
+        <div id="search-results">
+          <div class="search-list">Search Results for <span></span></div>
+          <div class="sr-items">
+            <p><i class="glyphicon glyphicon-refresh index-loading"></i></p>
+          </div>
+          <ul id="pagination" data-first=First data-prev=Previous data-next=Next data-last=Last></ul>
+        </div>
+      </div>
+      <div role="main" class="container body-content hide-when-search">
+        <div class="article row grid">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="multiplayer-host-improvements-plan">Multiplayer Host Improvements Plan</h1>
+
+<h2 id="scope">Scope</h2>
+<p>This plan captures practical improvements identified while upgrading the library to .NET 10. The focus is on preserving the project's generic multiplayer-host responsibilities while improving runtime safety, API clarity, observability, and maintainability.</p>
+<h2 id="current-observations">Current Observations</h2>
+<ul>
+<li>The library has a clean, small surface area and a clear separation between host responsibilities and game-specific implementations.</li>
+<li>The server runtime currently relies on shared mutable state across background loops (<code>Server</code>, <code>RequestBuffer</code>, <code>ResponseBuffer</code>) without explicit concurrency guards.</li>
+<li>Startup and shutdown are asynchronous in behavior but only partially modeled as such in the public API.</li>
+<li>Nullability and initialization contracts are not fully enforced in several public models and context properties.</li>
+<li>No test project was found in the workspace, so core lifecycle and buffering behavior is currently not protected by automated regression tests.</li>
+</ul>
+<h2 id="implementation-status">Implementation Status</h2>
+<ul>
+<li>Completed: lifecycle/shutdown hardening, core thread-safety fixes, API/nullability contract cleanup, timing/persistence cleanup, observability/diagnostics improvements, automated regression test project, CI pull-request quality gates, and README/runtime documentation refresh.</li>
+<li>In progress: none.</li>
+<li>Not started: none.</li>
+</ul>
+<h2 id="improvement-proposals">Improvement Proposals</h2>
+<h3 id="1-harden-server-lifecycle-and-shutdown-behavior">1. Harden server lifecycle and shutdown behavior</h3>
+<p><strong>Why</strong></p>
+<ul>
+<li><code>Server.Stop()</code> blocks on <code>Task.Wait()</code>, which can deadlock or wrap exceptions.</li>
+<li>The main loop and dispatcher loop are controlled only by <code>IsRunning</code>, with no cancellation token or coordinated shutdown.</li>
+<li>Event subscriptions are added on start and never removed on stop.</li>
+</ul>
+<p><strong>Relevant files</strong></p>
+<ul>
+<li><code>host/Domain/Server.cs</code></li>
+<li><code>host/Domain/Server_MainLoop.cs</code></li>
+<li><code>host/Domain/Server_Dispatcher.cs</code></li>
+<li><code>host/Abstract/IServer.cs</code></li>
+</ul>
+<p><strong>Trackable tasks</strong></p>
+<ul>
+<li>[x] Add coordinated cancellation for <code>MainLoop</code> and <code>DispatcherLoop</code> using <code>CancellationTokenSource</code>.</li>
+<li>[x] Introduce an async shutdown path (<code>StopAsync</code>) and keep <code>Stop()</code> as a compatibility wrapper if needed.</li>
+<li>[x] Replace blocking waits with awaited task completion and preserve original exceptions.</li>
+<li>[x] Unsubscribe <code>PlayerConnecting</code> and <code>PlayerDisconnected</code> handlers during shutdown.</li>
+<li>[x] Prevent duplicate starts and invalid stop calls with dedicated exception types or clearer error messages.</li>
+<li>[x] Ensure dispatcher shutdown drains queued outbound messages or explicitly documents drop behavior.</li>
+</ul>
+<p><strong>Acceptance criteria</strong></p>
+<ul>
+<li>Server startup and shutdown can complete without blocking on <code>.Wait()</code>.</li>
+<li>Both background loops exit deterministically when shutdown begins.</li>
+<li>Repeated start/stop misuse yields clear, intentional behavior.</li>
+</ul>
+<h3 id="2-make-shared-state-access-thread-safe">2. Make shared state access thread-safe</h3>
+<p><strong>Why</strong></p>
+<ul>
+<li><code>users</code> is a regular <code>Dictionary&lt;int, User&gt;</code> accessed from multiple execution paths.</li>
+<li><code>RequestBuffer</code> swaps queue roles without synchronization while other threads may enqueue incoming messages.</li>
+<li><code>IsRunning</code> and <code>tickCounter</code> are read/written across multiple tasks without explicit concurrency guarantees.</li>
+</ul>
+<p><strong>Relevant files</strong></p>
+<ul>
+<li><code>host/Domain/Server.cs</code></li>
+<li><code>host/Domain/Server_MainLoop.cs</code></li>
+<li><code>host/Domain/RequestBuffer.cs</code></li>
+<li><code>host/Domain/ResponseBuffer.cs</code></li>
+</ul>
+<p><strong>Trackable tasks</strong></p>
+<ul>
+<li>[x] Replace <code>Dictionary&lt;int, User&gt;</code> with a concurrency-safe design, or protect all access through a lock strategy.</li>
+<li>[x] Redesign <code>RequestBuffer</code> so producer writes and consumer buffer swapping are synchronized safely.</li>
+<li>[x] Review <code>tickCounter</code> type consistency (<code>uint</code> vs <code>ulong</code>) and use atomic access where needed.</li>
+<li>[x] Ensure the running-state flag is safe for cross-thread visibility.</li>
+<li>[x] Add targeted concurrency tests for message enqueueing, buffer swapping, and user add/remove behavior.</li>
+</ul>
+<p><strong>Acceptance criteria</strong></p>
+<ul>
+<li>Concurrent connection, message enqueue, and turn-processing operations do not risk data races.</li>
+<li>Buffer behavior remains correct under sustained parallel message production.</li>
+</ul>
+<h3 id="3-strengthen-public-api-contracts-and-nullability">3. Strengthen public API contracts and nullability</h3>
+<p><strong>Why</strong></p>
+<ul>
+<li><code>ServerContext</code> exposes non-nullable properties (<code>Repository</code>, <code>ConnectionManager</code>, <code>TurnProcessor</code>) that are assigned later.</li>
+<li><code>ClientMessage.Data</code>, <code>ServerMessage.Data</code>, and <code>ServerMessage.Targets</code> are non-nullable but do not define defaults or constructor enforcement.</li>
+<li>Some public events and XML docs do not reflect nullable intent consistently.</li>
+</ul>
+<p><strong>Relevant files</strong></p>
+<ul>
+<li><code>host/Domain/ServerContext.cs</code></li>
+<li><code>host/Messages/ClientMessage.cs</code></li>
+<li><code>host/Messages/ServerMessage.cs</code></li>
+<li><code>host/Abstract/IServer.cs</code></li>
+<li><code>host/Abstract/IConnectionManager.cs</code></li>
+</ul>
+<p><strong>Trackable tasks</strong></p>
+<ul>
+<li>[x] Refactor <code>ServerContext</code> initialization so required collaborators are enforced before use.</li>
+<li>[x] Use <code>required</code> members, constructors, or safe defaults for message models to eliminate invalid partially initialized instances.</li>
+<li>[x] Align event declarations and delegate signatures with nullable reference type intent.</li>
+<li>[x] Review and tighten thrown exception types for invalid configuration and invalid lifecycle states.</li>
+<li>[x] Update XML documentation to match the actual runtime contracts and expectations.</li>
+</ul>
+<p><strong>Acceptance criteria</strong></p>
+<ul>
+<li>Public API surfaces no obvious nullability ambiguities.</li>
+<li>Consumers receive earlier and clearer feedback for invalid configuration or malformed messages.</li>
+</ul>
+<h3 id="4-improve-timing-persistence-and-runtime-correctness-semantics">4. Improve timing, persistence, and runtime correctness semantics</h3>
+<p><strong>Why</strong></p>
+<ul>
+<li><code>CreateServerMessage</code> timestamps use <code>DateTime.Now.Ticks</code>, while other code uses UTC.</li>
+<li><code>ShouldSaveUser</code> comments mention one minute, but implementation uses 5 seconds.</li>
+<li>The turn loop uses elapsed timing that should stay internally consistent and easy to reason about.</li>
+</ul>
+<p><strong>Relevant files</strong></p>
+<ul>
+<li><code>host/Domain/Server.cs</code></li>
+<li><code>host/Domain/Server_MainLoop.cs</code></li>
+<li><code>host/Domain/User.cs</code></li>
+<li><code>host/Abstract/ITurnProcessor.cs</code></li>
+</ul>
+<p><strong>Trackable tasks</strong></p>
+<ul>
+<li>[x] Standardize all server-side timestamps on UTC or another documented monotonic strategy.</li>
+<li>[x] Align user-save throttling comments, naming, and implementation with the intended behavior.</li>
+<li>[x] Extract save throttling into a configurable policy or constant owned by the host.</li>
+<li>[x] Review tick and elapsed-time calculations for overflow, drift, and documentation clarity.</li>
+<li>[x] Add tests covering save throttling and turn-timing behavior.</li>
+</ul>
+<p><strong>Acceptance criteria</strong></p>
+<ul>
+<li>Time-related behavior is internally consistent and documented.</li>
+<li>Persistence cadence is explicit, configurable, and validated by tests.</li>
+</ul>
+<h3 id="5-increase-observability-and-diagnostics">5. Increase observability and diagnostics</h3>
+<p><strong>Why</strong></p>
+<ul>
+<li>Logging is present but mostly message-based and lacks structured lifecycle, throughput, and error context.</li>
+<li>There is no built-in lightweight metric surface for queue depth, active users, or turn duration.</li>
+</ul>
+<p><strong>Relevant files</strong></p>
+<ul>
+<li><code>host/Domain/Server.cs</code></li>
+<li><code>host/Domain/Server_MainLoop.cs</code></li>
+<li><code>host/Domain/Server_Dispatcher.cs</code></li>
+</ul>
+<p><strong>Trackable tasks</strong></p>
+<ul>
+<li>[x] Add structured log scopes or richer event IDs for startup, shutdown, dispatch, and persistence actions.</li>
+<li>[x] Emit periodic diagnostics for active user count, processed client messages, queued responses, and turn duration.</li>
+<li>[x] Consider exposing optional meter/counter instrumentation using modern .NET diagnostics primitives.</li>
+<li>[x] Review error logs to include enough identifiers for production troubleshooting without leaking game-specific payload details.</li>
+</ul>
+<p><strong>Acceptance criteria</strong></p>
+<ul>
+<li>Operators can identify lifecycle transitions and runtime hotspots from logs or metrics.</li>
+<li>Diagnostic output remains generic and host-focused rather than game-specific.</li>
+</ul>
+<h3 id="6-add-automated-tests-and-ci-quality-gates">6. Add automated tests and CI quality gates</h3>
+<p><strong>Why</strong></p>
+<ul>
+<li>No test project was found in the current workspace.</li>
+<li>Core behavior such as lifecycle transitions, buffering, user persistence cadence, and message dispatch ordering should be regression-tested.</li>
+</ul>
+<p><strong>Relevant files</strong></p>
+<ul>
+<li>New test project under the solution root</li>
+<li><code>host/Domain/*</code></li>
+<li><code>host/Abstract/*</code></li>
+</ul>
+<p><strong>Trackable tasks</strong></p>
+<ul>
+<li>[x] Add a dedicated test project targeting .NET 10.</li>
+<li>[x] Add unit tests for startup validation, duplicate start prevention, and shutdown behavior.</li>
+<li>[x] Add tests for <code>RequestBuffer</code> and <code>ResponseBuffer</code> semantics.</li>
+<li>[x] Add tests for user loading, connection acceptance/rejection, and persistence triggers.</li>
+<li>[x] Update CI to build and run tests on pull requests.</li>
+</ul>
+<p><strong>Acceptance criteria</strong></p>
+<ul>
+<li>Core host behavior is covered by automated tests.</li>
+<li>CI fails when runtime behavior regresses.</li>
+</ul>
+<h3 id="7-refresh-package-and-developer-documentation">7. Refresh package and developer documentation</h3>
+<p><strong>Why</strong></p>
+<ul>
+<li>The README is clear at a high level, but it does not document lifecycle expectations, threading assumptions, or operational guarantees.</li>
+<li>The package now targets .NET 10 and should document that explicitly.</li>
+</ul>
+<p><strong>Relevant files</strong></p>
+<ul>
+<li><code>README.md</code></li>
+<li><code>host/Host.csproj</code></li>
+</ul>
+<p><strong>Trackable tasks</strong></p>
+<ul>
+<li>[x] Update the README quickstart to describe required configuration order and lifecycle expectations.</li>
+<li>[x] Document threading and callback expectations for <code>ITurnProcessor</code>, <code>IConnectionManager</code>, and repository implementations.</li>
+<li>[x] Document message contract expectations, including payload ownership and timestamp semantics.</li>
+<li>[x] Add a short section describing shutdown behavior and persistence timing.</li>
+<li>[x] Keep package metadata, badges, and target framework references aligned with supported versions.</li>
+</ul>
+<p><strong>Acceptance criteria</strong></p>
+<ul>
+<li>Consumers can integrate the library without reading the internal implementation.</li>
+<li>Public documentation matches the actual runtime behavior.</li>
+</ul>
+<h2 id="suggested-delivery-order">Suggested Delivery Order</h2>
+<ol>
+<li>Lifecycle and shutdown hardening</li>
+<li>Shared-state thread-safety fixes</li>
+<li>API/nullability contract cleanup</li>
+<li>Timing and persistence correctness</li>
+<li>Automated tests</li>
+<li>Observability improvements</li>
+<li>Documentation refresh</li>
+</ol>
+<h2 id="notes">Notes</h2>
+<ul>
+<li>The recommendations above intentionally avoid game-specific features and keep the host focused on reusable server concerns.</li>
+<li>Any public API changes should be reviewed for compatibility impact before release as a new package version.</li>
+</ul>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/enriko-riba/multiplayer-host/blob/67/merge/improvements-plan.md/#L1" class="contribution-link">Edit this page</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+                <h5>In this article</h5>
+                <div></div>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      
+      <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="styles/docfx.js"></script>
+    <script type="text/javascript" src="styles/main.js"></script>
+  </body>
+</html>
