@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.14.35821.62
+# Visual Studio Version 18
+VisualStudioVersion = 18.6.11709.129 insiders
 MinimumVisualStudioVersion = 15.0.26124.0
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Host", "host\Host.csproj", "{BA02C2D8-35CA-4253-BB0E-815FCEEAD614}"
 EndProject
@@ -25,6 +25,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{
 		.github\workflows\publish.yml = .github\workflows\publish.yml
 		.github\workflows\stale.yml = .github\workflows\stale.yml
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MultiplayerHost.Tests", "tests\MultiplayerHost.Tests\MultiplayerHost.Tests.csproj", "{84EBF0B4-31E4-4937-2706-3C4A0B7B0E44}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -72,6 +74,18 @@ Global
 		{0FEBD58E-C382-4676-AF22-C6B5BB6D9429}.Release|x64.Build.0 = Release|Any CPU
 		{0FEBD58E-C382-4676-AF22-C6B5BB6D9429}.Release|x86.ActiveCfg = Release|Any CPU
 		{0FEBD58E-C382-4676-AF22-C6B5BB6D9429}.Release|x86.Build.0 = Release|Any CPU
+		{84EBF0B4-31E4-4937-2706-3C4A0B7B0E44}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{84EBF0B4-31E4-4937-2706-3C4A0B7B0E44}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{84EBF0B4-31E4-4937-2706-3C4A0B7B0E44}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{84EBF0B4-31E4-4937-2706-3C4A0B7B0E44}.Debug|x64.Build.0 = Debug|Any CPU
+		{84EBF0B4-31E4-4937-2706-3C4A0B7B0E44}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{84EBF0B4-31E4-4937-2706-3C4A0B7B0E44}.Debug|x86.Build.0 = Debug|Any CPU
+		{84EBF0B4-31E4-4937-2706-3C4A0B7B0E44}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{84EBF0B4-31E4-4937-2706-3C4A0B7B0E44}.Release|Any CPU.Build.0 = Release|Any CPU
+		{84EBF0B4-31E4-4937-2706-3C4A0B7B0E44}.Release|x64.ActiveCfg = Release|Any CPU
+		{84EBF0B4-31E4-4937-2706-3C4A0B7B0E44}.Release|x64.Build.0 = Release|Any CPU
+		{84EBF0B4-31E4-4937-2706-3C4A0B7B0E44}.Release|x86.ActiveCfg = Release|Any CPU
+		{84EBF0B4-31E4-4937-2706-3C4A0B7B0E44}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
