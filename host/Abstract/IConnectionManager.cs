@@ -9,14 +9,14 @@ using MultiplayerHost.Messages;
 /// </summary>
 /// <param name="sender"></param>
 /// <param name="e"></param>
-public delegate void PlayerDisconnectedEventHandler(object sender, PlayerDisconnectedArgs e);
+public delegate void PlayerDisconnectedEventHandler(object? sender, PlayerDisconnectedArgs e);
 
 /// <summary>
 /// Contract for <see cref="IConnectionManager.PlayerConnecting"/> event handler.
 /// </summary>
 /// <param name="sender"></param>
 /// <param name="e"></param>
-public delegate void PlayerConnectingEventHandler(object sender, PlayerConnectingArgs e);
+public delegate void PlayerConnectingEventHandler(object? sender, PlayerConnectingArgs e);
 
 /// <summary>
 /// PlayerDisconnected event argument.
@@ -53,13 +53,13 @@ public interface IConnectionManager
     /// Raised when a new user connection is about to be accepted. 
     /// If the subscriber sets the <see cref="PlayerConnectingArgs.Cancel"/> to true, the connection must be dropped.
     /// </summary>
-    event PlayerConnectingEventHandler PlayerConnecting;
+    event PlayerConnectingEventHandler? PlayerConnecting;
 
     /// <summary>
     /// Raised when a user disconnect is detected.
     /// Used by subscribers to clean up user state.
     /// </summary>
-    event PlayerDisconnectedEventHandler PlayerDisconnected;
+    event PlayerDisconnectedEventHandler? PlayerDisconnected;
 
     /// <summary>
     /// Forcefully disconnects the player.

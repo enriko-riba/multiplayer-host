@@ -14,7 +14,7 @@ public abstract class User
     public int Id { get; init; }
 
     /// <summary>
-    /// Timestamp - users last save time.
+    /// UTC timestamp of the user's last successful persistence operation.
     /// </summary>
     [JsonIgnore]
     public DateTime LastSaved { get; set; }
@@ -26,7 +26,7 @@ public abstract class User
     public bool IsDirty { get; set; }
     
     /// <summary>
-    /// Timestamp - users last connect time.
+    /// UTC timestamp of when the user most recently connected.
     /// </summary>
     [JsonIgnore]
     public DateTime? IsOnlineSince { get; internal set; }

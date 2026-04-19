@@ -1,6 +1,7 @@
 ﻿namespace MultiplayerHost.Domain;
 
 using MultiplayerHost.Messages;
+using System;
 using System.Collections.Concurrent;
 using System.Threading;
 
@@ -16,7 +17,29 @@ internal sealed class ResponseBuffer
     /// <summary>
     /// Blocks the current thread until a write operation signals that new messages are available.
     /// </summary>
-    public bool WaitOnMessage => responseBufferSignal.WaitOne(SERVER_MESSAGE_WAIT_TIMEOUT);
+    public bool WaitOnMessage(CancellationToken cancellationToken)
+    {
+        var waitHandles = new WaitHandle[] { responseBufferSignal, cancellationToken.WaitHandle };
+        var signalIndex = WaitHandle.WaitAny(waitHandles, SERVER_MESSAGE_WAIT_TIMEOUT);
+
+        return signalIndex switch
+        {
+            WaitHandle.WaitTimeout => responseBuffer.Count > 0,
+            0 => true,
+            1 => throw new OperationCanceledException(cancellationToken),
+            _ => false
+        };
+    }
+
+    /// <summary>
+    /// Returns true when outbound messages are still queued.
+    /// </summary>
+    public bool HasPendingMessages => !responseBuffer.IsEmpty;
+
+    /// <summary>
+    /// Gets the current number of queued outbound messages.
+    /// </summary>
+    public int Count => responseBuffer.Count;
 
     /// <summary>
     /// Writes a server message to the buffer.

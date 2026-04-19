@@ -1,7 +1,7 @@
 # Multiplayer Host
 ![project logo](host/images/image.png)
 
-[![Build .NET 9 class library](https://github.com/enriko-riba/multiplayer-host/actions/workflows/build.yml/badge.svg)](https://github.com/enriko-riba/multiplayer-host/actions/workflows/build.yml)
+[![Build .NET 10 class library](https://github.com/enriko-riba/multiplayer-host/actions/workflows/build.yml/badge.svg)](https://github.com/enriko-riba/multiplayer-host/actions/workflows/build.yml)
 
 ## Overview
 The **Multiplayer Host** is a class library helping game developers implementing multiplayer game servers. It exposes a **Server** component 
@@ -42,8 +42,21 @@ The server requires external components providing the following interfaces:
 ## Turn processing
 The server uses the `ITurnProcessor` interface to invoke game specific logic. The turn processors methods are invoked in the following order:
 1. `ITurnProcessor.ProcessClientMessage(User user, in ClientMessage message);` invoked once for every received client message 
-2. `ITurnProcessor.ProcessUserTurn(User user, int ellapsedMilliseconds);` invoked once per turn for every user (both online and offline)
+2. `ITurnProcessor.ProcessUserTurn(User user, int elapsedMilliseconds);` invoked once per turn for every user (both online and offline)
 3. `ITurnProcessor.OnTurnComplete();` invoked once per turn after all messages and users have been processed
+
+## Runtime and lifecycle expectations
+- Configure the server context before calling `Start()`.
+- `Start()` loads the active users, raises the startup callbacks, and then begins the background main loop and dispatcher loop.
+- `StopAsync()` is the preferred shutdown API. The compatibility `Stop()` wrapper blocks until the asynchronous shutdown completes.
+- `ITurnProcessor` callbacks run on the server background loop, so implementations should avoid blocking work and keep their own shared state thread-safe.
+- Outbound server messages are timestamped with UTC ticks, and dispatcher shutdown drains queued outbound messages before the stop operation completes.
+- Dirty users are persisted on the host save interval (currently 5 seconds) rather than on every turn.
+
+## Message contracts
+- `ClientMessage` and `ServerMessage` payloads are owned by the game implementation and should be treated as non-null application data.
+- `ServerMessage.Targets` is interpreted together with `TargetKind`; use an empty target array when broadcasting to all users.
+- Message timestamps should use UTC-based values when the game implementation sets them.
 
 # Quickstart
 1. create a game specific user entity inheriting from `MultiplayerHost.Domain.User`
@@ -64,7 +77,7 @@ The server will only use the IRepository interface to save the user state. If yo
 ```cs
 IServer server;
 var context = server.Context;
-context.Configure(repository, connMngr, turnProcessor);
+context.Configure(repository, connMngr, turnProcessor, turnTimeMillis: 50);
 // optionally subscribe for initial game setup: context.Server.OnBeforeServerStart += OnServerStart;
 ```
 5. start the server
@@ -72,6 +85,10 @@ context.Configure(repository, connMngr, turnProcessor);
 await server.Start();
 ```
 6. The server starts invoking the turn processing logic
-7. You also need a client capable of exchanging messages with your IConnectionManager implementation
+7. stop the server gracefully when the host application shuts down
+```cs
+await server.StopAsync();
+```
+8. You also need a client capable of exchanging messages with your IConnectionManager implementation
 
 **Note**: The multiplayer game server is easiest to be used with a DI container. Consult the reference game server project how to setup DI in a console application.

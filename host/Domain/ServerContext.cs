@@ -1,5 +1,6 @@
 ﻿namespace MultiplayerHost.Domain;
 
+using System;
 using MultiplayerHost.Abstract;
 
 /// <summary>
@@ -9,6 +10,10 @@ public class ServerContext
 {
     private const int MinTurnTime = 10;
     private const int MaxTurnTime = 60000;
+
+    private IRepository? repository;
+    private IConnectionManager? connectionManager;
+    private ITurnProcessor? turnProcessor;
 
     internal ServerContext(IServer server)
     {
@@ -24,11 +29,19 @@ public class ServerContext
     /// <param name="turnTimeMillis">Milliseconds per server turn</param>
     public void Configure(IRepository repository, IConnectionManager connectionManager, ITurnProcessor turnProcessor, int turnTimeMillis)
     {
-        Repository = repository;
-        ConnectionManager = connectionManager;
-        TurnProcessor = turnProcessor;
+        ArgumentNullException.ThrowIfNull(repository);
+        ArgumentNullException.ThrowIfNull(connectionManager);
+        ArgumentNullException.ThrowIfNull(turnProcessor);
 
-        if (turnTimeMillis < 10 || turnTimeMillis > MaxTurnTime) throw new System.ArgumentOutOfRangeException(nameof(turnTimeMillis), $"must be {MinTurnTime} - {MaxTurnTime}");
+        this.repository = repository;
+        this.connectionManager = connectionManager;
+        this.turnProcessor = turnProcessor;
+
+        if (turnTimeMillis < MinTurnTime || turnTimeMillis > MaxTurnTime)
+        {
+            throw new ArgumentOutOfRangeException(nameof(turnTimeMillis), $"must be {MinTurnTime} - {MaxTurnTime}");
+        }
+
         TurnTimeMillis = turnTimeMillis;
     }
 
@@ -40,17 +53,17 @@ public class ServerContext
     /// <summary>
     /// Returns the configured repository.
     /// </summary>
-    public IRepository Repository { get; private set; }
+    public IRepository Repository => repository ?? throw new InvalidOperationException("The server context repository has not been configured.");
 
     /// <summary>
     /// Returns the configured connection manager.
     /// </summary>
-    public IConnectionManager ConnectionManager { get; private set; }
+    public IConnectionManager ConnectionManager => connectionManager ?? throw new InvalidOperationException("The server context connection manager has not been configured.");
 
     /// <summary>
     /// Returns the configured turn processor.
     /// </summary>
-    public ITurnProcessor TurnProcessor { get; private set; }
+    public ITurnProcessor TurnProcessor => turnProcessor ?? throw new InvalidOperationException("The server context turn processor has not been configured.");
 
     /// <summary>
     /// Returns the server instance.
@@ -61,8 +74,8 @@ public class ServerContext
     /// Returns true if the context is correctly configured otherwise false.
     /// </summary>
     public bool IsContextValid =>
-        Repository != null &&
-        ConnectionManager != null &&
-        TurnProcessor != null &&
+        repository != null &&
+        connectionManager != null &&
+        turnProcessor != null &&
         Server != null;
 }

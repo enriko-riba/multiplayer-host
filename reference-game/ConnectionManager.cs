@@ -7,8 +7,8 @@ namespace MultiplayerHost.ReferenceGame;
 
 public class ConnectionManager : IConnectionManager
 {
-    public event PlayerConnectingEventHandler PlayerConnecting;
-    public event PlayerDisconnectedEventHandler PlayerDisconnected;
+    public event PlayerConnectingEventHandler? PlayerConnecting;
+    public event PlayerDisconnectedEventHandler? PlayerDisconnected;
 
     public void DisconnectPlayer(int playerId)
     {

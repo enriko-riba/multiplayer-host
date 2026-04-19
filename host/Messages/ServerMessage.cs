@@ -1,5 +1,6 @@
 ﻿namespace MultiplayerHost.Messages;
 
+using System;
 using System.Text.Json.Serialization;
 
 /// <summary>
@@ -7,6 +8,25 @@ using System.Text.Json.Serialization;
 /// </summary>
 public readonly struct ServerMessage
 {
+    /// <summary>
+    /// Creates a server message with the required host-facing fields.
+    /// </summary>
+    /// <param name="tick">Server tick during which the message was created.</param>
+    /// <param name="created">UTC timestamp in ticks when the message was generated.</param>
+    /// <param name="code">Game-specific response code.</param>
+    /// <param name="data">Payload owned by the game implementation.</param>
+    /// <param name="targetKind">How to interpret the targets collection.</param>
+    /// <param name="targets">Target user ids used with the selected target kind.</param>
+    public ServerMessage(ulong tick, long created, int code, string data, TargetKind targetKind, int[] targets)
+    {
+        Tick = tick;
+        Created = created;
+        Code = code;
+        Data = data ?? throw new ArgumentNullException(nameof(data));
+        TargetKind = targetKind;
+        Targets = targets ?? throw new ArgumentNullException(nameof(targets));
+    }
+
     /// <summary>
     /// Server tick (turn counter).
     /// </summary>
@@ -25,7 +45,7 @@ public readonly struct ServerMessage
     /// <summary>
     /// Response payload, used by the game implementation.
     /// </summary>
-    public string Data { get; init; }
+    public string Data { get; init; } = string.Empty;
 
     /// <summary>
     /// Defines how to use the <see cref="ServerMessage.Targets"/> user id's.
@@ -38,5 +58,5 @@ public readonly struct ServerMessage
     /// The user id's are always used in the context of <see cref="ServerMessage.TargetKind"/>.
     /// </summary>
     [JsonIgnore]
-    public int[] Targets { get; init; }
+    public int[] Targets { get; init; } = [];
 }

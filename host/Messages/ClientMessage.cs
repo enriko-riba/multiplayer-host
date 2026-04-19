@@ -1,10 +1,25 @@
 ﻿namespace MultiplayerHost.Messages;
 
+using System;
+
 /// <summary>
 /// Client 2 Server message.
 /// </summary>
 public readonly struct ClientMessage
 {
+    /// <summary>
+    /// Creates a client message with the required host-facing fields.
+    /// </summary>
+    /// <param name="userId">Logged in user id.</param>
+    /// <param name="code">Game-specific command code.</param>
+    /// <param name="data">Payload owned by the game implementation.</param>
+    public ClientMessage(int userId, int code, string data)
+    {
+        UserId = userId;
+        Code = code;
+        Data = data ?? throw new ArgumentNullException(nameof(data));
+    }
+
     /// <summary>
     /// ID of logged in user.
     /// </summary>
@@ -30,5 +45,5 @@ public readonly struct ClientMessage
     /// <summary>
     /// Message payload. This field is ignored by the server, the game implementation can use it as will.
     /// </summary>
-    public string Data { get; init; }
+    public string Data { get; init; } = string.Empty;
 }
