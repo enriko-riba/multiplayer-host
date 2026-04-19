@@ -28,6 +28,7 @@ public class ServerLifecycleTests
         Assert.Single(server.Users);
         Assert.Equal(1, connectionManager.PlayerConnectingSubscriptionCount);
         Assert.Equal(1, connectionManager.PlayerDisconnectedSubscriptionCount);
+        await WaitForConditionAsync(() => turnProcessor.OnTurnStartCalls >= 1 && turnProcessor.OnTurnCompleteCalls >= 1);
 
         await server.StopAsync();
 
