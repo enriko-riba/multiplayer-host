@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFramework>net9.0</TargetFramework>
+        <TargetFramework>net10.0</TargetFramework>
         <RootNamespace>MultiplayerHost</RootNamespace>
         <Nullable>enable</Nullable>
 
@@ -11,7 +11,7 @@
         <Copyright>(c) 2020-2025</Copyright>
         <PackageProjectUrl>https://github.com/enriko-riba/multiplayer-host/projects</PackageProjectUrl>
         <RepositoryUrl>https://github.com/enriko-riba/multiplayer-host</RepositoryUrl>
-        <PackageTags>net9.0 c# gamedev</PackageTags>
+        <PackageTags>net10.0 c# gamedev</PackageTags>
         <PackageIcon>image-logo.png</PackageIcon>
         <PackageReadmeFile>README.md</PackageReadmeFile>
 
@@ -19,7 +19,7 @@
         <AnalysisLevel>latest</AnalysisLevel>
         <DebugType>embedded</DebugType>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
-        <DocumentationFile>bin\Release\net9.0\Host.xml</DocumentationFile>
+        <DocumentationFile>bin\Release\net10.0\Host.xml</DocumentationFile>
 
         <!-- Package Restore Settings -->
         <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
@@ -37,6 +37,10 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.8" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.6" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <InternalsVisibleTo Include="MultiplayerHost.Tests" />
     </ItemGroup>
 </Project>

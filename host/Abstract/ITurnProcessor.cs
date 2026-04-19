@@ -30,7 +30,7 @@ public interface ITurnProcessor
 
     /// <summary>
     /// Main game logic processing method. Invoked by the server for each user (both connected and disconnected).
-    /// Note: the server is every 5 seconds checking the <see cref="User.IsDirty"/> and persisting player state via <see cref="IRepository.SaveUserAsync"/> method.
+    /// Note: the server periodically checks <see cref="User.IsDirty"/> and persists player state via <see cref="IRepository.SaveUserAsync"/> when the host save interval has elapsed.
     /// </summary>
     /// <param name="user"></param>
     /// <param name="elapsedMilliseconds">elapsed time in milliseconds since last turn</param>

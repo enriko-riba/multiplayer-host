@@ -10,17 +10,25 @@ using System.Collections.Generic;
 /// </summary>
 internal sealed class RequestBuffer
 {
-    private int writeBuffer = 0;
-    private int readBuffer = 1;
+    private readonly object syncRoot = new();
+    private Queue<ClientMessage> writeBuffer;
+    private Queue<ClientMessage> readBuffer;
 
     /// <summary>
     /// Holds two client message buffers. One buffer is write only while the other is read only. 
     /// The buffers are swapped each turn.
     /// </summary>
-    private readonly Queue<ClientMessage>[] swapChain = [
-        new Queue<ClientMessage>(1024),
-        new Queue<ClientMessage>(1024)
-    ];
+    private readonly Queue<ClientMessage> bufferA = new(1024);
+    private readonly Queue<ClientMessage> bufferB = new(1024);
+
+    /// <summary>
+    /// Creates a new request buffer.
+    /// </summary>
+    public RequestBuffer()
+    {
+        writeBuffer = bufferA;
+        readBuffer = bufferB;
+    }
 
     /// <summary>
     /// Enqueues a client message for processing.
@@ -28,7 +36,10 @@ internal sealed class RequestBuffer
     /// <param name="message"></param>
     public void Write(in ClientMessage message)
     {
-        swapChain[writeBuffer].Enqueue(message);
+        lock (syncRoot)
+        {
+            writeBuffer.Enqueue(message);
+        }
     }
 
     /// <summary>
@@ -36,7 +47,17 @@ internal sealed class RequestBuffer
     /// </summary>
     /// <param name="message"></param>
     /// <returns></returns>
-    public bool TryRead(out ClientMessage message) => swapChain[readBuffer].TryDequeue(out message);
+    public bool TryRead(out ClientMessage message)
+    {
+        if (readBuffer.Count > 0)
+        {
+            message = readBuffer.Dequeue();
+            return true;
+        }
+
+        message = default;
+        return false;
+    }
 
 
     /// <summary>
@@ -44,6 +65,9 @@ internal sealed class RequestBuffer
     /// </summary>
     public void SwapBuffers()
     {
-        (writeBuffer, readBuffer) = (readBuffer, writeBuffer);
+        lock (syncRoot)
+        {
+            (writeBuffer, readBuffer) = (readBuffer, writeBuffer);
+        }
     }
 }

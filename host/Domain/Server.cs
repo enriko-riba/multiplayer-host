@@ -1,8 +1,11 @@
 ﻿namespace MultiplayerHost.Domain;
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics.Metrics;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using MultiplayerHost.Abstract;
@@ -13,16 +16,30 @@ using MultiplayerHost.Messages;
 /// </summary>
 public partial class Server : IServer
 {
+    private static readonly TimeSpan UserSaveInterval = TimeSpan.FromSeconds(5);
+    private static readonly Meter DiagnosticsMeter = new("MultiplayerHost.Server");
+    private static readonly Counter<int> ReceivedClientMessagesCounter = DiagnosticsMeter.CreateCounter<int>("multiplayerhost.server.client_messages_processed");
+    private static readonly Counter<int> DispatchedServerMessagesCounter = DiagnosticsMeter.CreateCounter<int>("multiplayerhost.server.server_messages_dispatched");
+    private static readonly Counter<int> PersistedUsersCounter = DiagnosticsMeter.CreateCounter<int>("multiplayerhost.server.users_persisted");
+
+    private static readonly EventId StartupEventId = new(1000, nameof(StartupEventId));
+    private static readonly EventId ShutdownEventId = new(1001, nameof(ShutdownEventId));
+    private static readonly EventId UserPersistenceEventId = new(1002, nameof(UserPersistenceEventId));
+    private static readonly EventId UserConnectionEventId = new(1003, nameof(UserConnectionEventId));
+    private static readonly EventId UserDisconnectionEventId = new(1004, nameof(UserDisconnectionEventId));
+
     private readonly RequestBuffer requestBuffer = new();
     private readonly ResponseBuffer responseBuffer = new();
     private readonly ServerContext context;
     private readonly ILogger logger;
+    private readonly SemaphoreSlim lifecycleLock = new(1, 1);
 
     private Task? dispatcherTask;
     private Task? mainLoopTask;
-    private uint tickCounter;
+    private CancellationTokenSource? shutdownTokenSource;
+    private int tickCounter;
 
-    private readonly Dictionary<int, User> users = [];
+    private readonly ConcurrentDictionary<int, User> users = [];
 
     /// <summary>
     /// Creates a new Server instance.
@@ -50,62 +67,158 @@ public partial class Server : IServer
     /// <inheritdoc />
     public async Task Start()
     {
-        logger.LogInformation("starting server...");
-
-        if (IsRunning) throw new Exception("Already running");
-        if (!context.IsContextValid) throw new Exception("ServerContext is not valid");
-
-        context.ConnectionManager.PlayerConnecting += ConnectionManager_PlayerConnecting;
-        context.ConnectionManager.PlayerDisconnected += ConnectionManager_PlayerDisconnected;
-
-        //  load all users
-        var activeUsers = await context.Repository.GetUsers();
-        foreach (var user in activeUsers)
+        using var scope = logger.BeginScope(new Dictionary<string, object>
         {
-            users.Add(user.Id, user);
+            ["ServerComponent"] = nameof(Server),
+            ["LifecycleOperation"] = "Start"
+        });
+
+        logger.LogInformation(StartupEventId, "Starting server.");
+
+        await lifecycleLock.WaitAsync().ConfigureAwait(false);
+
+        try
+        {
+            if (IsRunning)
+            {
+                throw new InvalidOperationException("The server is already running.");
+            }
+
+            if (!context.IsContextValid)
+            {
+                throw new InvalidOperationException("The server context is not configured.");
+            }
+
+            shutdownTokenSource?.Dispose();
+            shutdownTokenSource = new CancellationTokenSource();
+            var cancellationToken = shutdownTokenSource.Token;
+
+            context.ConnectionManager.PlayerConnecting += ConnectionManager_PlayerConnecting;
+            context.ConnectionManager.PlayerDisconnected += ConnectionManager_PlayerDisconnected;
+
+            users.Clear();
+            Interlocked.Exchange(ref tickCounter, 0);
+
+            try
+            {
+                var activeUsers = await context.Repository.GetUsers().ConfigureAwait(false);
+                foreach (var user in activeUsers)
+                {
+                    users[user.Id] = user;
+                }
+
+                logger.LogInformation(StartupEventId, "Loaded {UserCount} users.", users.Count);
+
+                var handler = OnBeforeServerStart;
+                handler?.Invoke(this, EventArgs.Empty);
+                await InvokeAsync(OnBeforeServerStartAsync, this, EventArgs.Empty).ConfigureAwait(false);
+
+                IsRunning = true;
+                mainLoopTask = Task.Run(() => MainLoop(cancellationToken), cancellationToken);
+                dispatcherTask = Task.Run(() => DispatcherLoop(cancellationToken), cancellationToken);
+            }
+            catch
+            {
+                context.ConnectionManager.PlayerConnecting -= ConnectionManager_PlayerConnecting;
+                context.ConnectionManager.PlayerDisconnected -= ConnectionManager_PlayerDisconnected;
+                users.Clear();
+                IsRunning = false;
+                shutdownTokenSource.Dispose();
+                shutdownTokenSource = null;
+                mainLoopTask = null;
+                dispatcherTask = null;
+                throw;
+            }
         }
-        logger.LogInformation("loaded {UserCount} users", activeUsers.Count());
+        finally
+        {
+            lifecycleLock.Release();
+        }
 
-        //  signal server start
-        var handler = OnBeforeServerStart;
-        handler?.Invoke(this, EventArgs.Empty);
-        await InvokeAsync(OnBeforeServerStartAsync, this, EventArgs.Empty);
-
-        //  start background processes
-        IsRunning = true;
-        mainLoopTask = Task.Run(MainLoop);
-        dispatcherTask = Task.Run(DispatcherLoop);
-        await Task.Delay(50);
-        logger.LogInformation("IRepository implementation: {IRepository}", context.Repository.GetType().FullName);
-        logger.LogInformation("IConnectionManager implementation: {IConnectionManager}", context.ConnectionManager.GetType().FullName);
-        logger.LogInformation("ITurnProcessor implementation: {ITurnProcessor}", context.TurnProcessor.GetType().FullName);
-        logger.LogInformation("multiplayer host server is up & running!");
+        logger.LogInformation(StartupEventId, "IRepository implementation: {IRepository}", context.Repository.GetType().FullName);
+        logger.LogInformation(StartupEventId, "IConnectionManager implementation: {IConnectionManager}", context.ConnectionManager.GetType().FullName);
+        logger.LogInformation(StartupEventId, "ITurnProcessor implementation: {ITurnProcessor}", context.TurnProcessor.GetType().FullName);
+        logger.LogInformation(StartupEventId, "Multiplayer host server is up and running.");
     }
 
     /// <inheritdoc />
     public void Stop()
     {
-        logger.LogWarning("stopping server...");
-        IsRunning = false;
-        mainLoopTask?.Wait();
-        dispatcherTask?.Wait();
-        logger.LogWarning("server stopped!");
+        StopAsync().GetAwaiter().GetResult();
+    }
+
+    /// <inheritdoc />
+    public async Task StopAsync()
+    {
+        using var scope = logger.BeginScope(new Dictionary<string, object>
+        {
+            ["ServerComponent"] = nameof(Server),
+            ["LifecycleOperation"] = "Stop"
+        });
+
+        logger.LogWarning(ShutdownEventId, "Stopping server.");
+
+        Task? mainLoop;
+        Task? dispatcherLoop;
+        CancellationTokenSource? tokenSource;
+
+        await lifecycleLock.WaitAsync().ConfigureAwait(false);
+
+        try
+        {
+            if (!IsRunning)
+            {
+                throw new InvalidOperationException("The server is not running.");
+            }
+
+            IsRunning = false;
+            tokenSource = shutdownTokenSource;
+            mainLoop = mainLoopTask;
+            dispatcherLoop = dispatcherTask;
+
+            shutdownTokenSource = null;
+            mainLoopTask = null;
+            dispatcherTask = null;
+
+            context.ConnectionManager.PlayerConnecting -= ConnectionManager_PlayerConnecting;
+            context.ConnectionManager.PlayerDisconnected -= ConnectionManager_PlayerDisconnected;
+
+            tokenSource?.Cancel();
+        }
+        finally
+        {
+            lifecycleLock.Release();
+        }
+
+        try
+        {
+            await AwaitBackgroundTasks(mainLoop, dispatcherLoop).ConfigureAwait(false);
+        }
+        finally
+        {
+            tokenSource?.Dispose();
+        }
+
+        logger.LogWarning(ShutdownEventId, "Server stopped. ActiveUsers={ActiveUsers}, PendingResponses={PendingResponses}", users.Count, responseBuffer.Count);
     }
 
     /// <inheritdoc />
     public void AddUser(User user)
     {
         logger.LogInformation("{@User}", user);
-        users.Add(user.Id, user);
+        if (!users.TryAdd(user.Id, user))
+        {
+            throw new InvalidOperationException($"A user with id {user.Id} already exists.");
+        }
     }
 
     /// <inheritdoc />
     public void RemoveUser(User user)
     {
         logger.LogWarning("{@User}", user);
-        if (users.Remove(user.Id))
+        if (users.TryRemove(user.Id, out _))
         {
-            context.Repository.DeleteUserAsync(user);
+            _ = context.Repository.DeleteUserAsync(user);
         }
     }
 
@@ -118,15 +231,17 @@ public partial class Server : IServer
     /// <inheritdoc />
     public void CreateServerMessage(int opCode, int[] targets, TargetKind targetKind, string payload)
     {
-        var msg = new ServerMessage()
-        {
-            Created = DateTime.Now.Ticks,
-            Tick = tickCounter,
-            Code = opCode,
-            Data = payload,
-            TargetKind = targetKind,
-            Targets = targets
-        };
+        ArgumentNullException.ThrowIfNull(targets);
+        ArgumentNullException.ThrowIfNull(payload);
+
+        var msg = new ServerMessage(
+            (ulong)Volatile.Read(ref tickCounter),
+            DateTime.UtcNow.Ticks,
+            opCode,
+            payload,
+            targetKind,
+            targets);
+
         responseBuffer.Write(in msg);
     }
 
@@ -164,16 +279,35 @@ public partial class Server : IServer
                               .Cast<AsyncEventHandler<EventArgs>>()
                               .Select(h => h(sender, e)));
 
+    private static async Task AwaitBackgroundTasks(params Task?[] tasks)
+    {
+        var runningTasks = tasks.Where(task => task is not null).Cast<Task>().ToArray();
+        if (runningTasks.Length == 0)
+        {
+            return;
+        }
+
+        try
+        {
+            await Task.WhenAll(runningTasks).ConfigureAwait(false);
+        }
+        catch (OperationCanceledException)
+        {
+            // Expected during coordinated shutdown when background loops observe cancellation.
+        }
+    }
+
+    internal int UserCount => users.Count;
+
 
     /// <summary>
-    /// If true the user will be saved to repository.
-    /// Base implementation returns true if the user state is dirty and at least one minute since last save has passed.
+    /// Returns true when the user is dirty and the save interval has elapsed.
     /// </summary>
     /// <param name="user"></param>
     /// <returns></returns>
     private static bool ShouldSaveUser(User user)
     {
-        return user.IsDirty && user.LastSaved.AddSeconds(5) < DateTime.UtcNow;
+        return user.IsDirty && user.LastSaved + UserSaveInterval < DateTime.UtcNow;
     }
 
     /// <summary>
@@ -183,30 +317,40 @@ public partial class Server : IServer
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="pc"></param>
-    private void ConnectionManager_PlayerConnecting(object sender, PlayerConnectingArgs pc)
+    private void ConnectionManager_PlayerConnecting(object? sender, PlayerConnectingArgs pc)
     {
         if (users.TryGetValue(pc.PlayerId, out var user))
         {
             user.IsOnlineSince = DateTime.UtcNow;
-            logger.LogInformation("{PlayerId}", pc.PlayerId);
+            logger.LogInformation(UserConnectionEventId, "Accepted connection for player {PlayerId}", pc.PlayerId);
         }
         else
         {
             pc.Cancel = true;
-            logger.LogWarning("canceling connection for unknown player {PlayerId}", pc.PlayerId);
+            logger.LogWarning(UserConnectionEventId, "Canceling connection for unknown player {PlayerId}", pc.PlayerId);
         }
     }
     
-    private void ConnectionManager_PlayerDisconnected(object sender, PlayerDisconnectedArgs pd)
+    private void ConnectionManager_PlayerDisconnected(object? sender, PlayerDisconnectedArgs pd)
     {
         if (users.TryGetValue(pd.PlayerId, out var user))
         {
             user.IsOnlineSince = null;
-            logger.LogInformation("{PlayerId}", pd.PlayerId);
+            logger.LogInformation(UserDisconnectionEventId, "Player {PlayerId} disconnected.", pd.PlayerId);
         }
         else
         {
-            logger.LogWarning("{PlayerId}", pd.PlayerId);
+            logger.LogWarning(UserDisconnectionEventId, "Received disconnect event for unknown player {PlayerId}", pd.PlayerId);
         }
+    }
+
+    private static void RecordClientMessageProcessed() => ReceivedClientMessagesCounter.Add(1);
+
+    private static void RecordServerMessageDispatched() => DispatchedServerMessagesCounter.Add(1);
+
+    private void RecordUserPersisted(User user)
+    {
+        PersistedUsersCounter.Add(1);
+        logger.LogDebug(UserPersistenceEventId, "Persisted user {PlayerId} after the save interval elapsed.", user.Id);
     }
 }

@@ -23,7 +23,7 @@ public interface IServer
     /// <summary>
     /// Raised after the server is initialized and all users loaded but before the main processing loop has started.
     /// </summary>
-    event EventHandler OnBeforeServerStart;
+    event EventHandler? OnBeforeServerStart;
 
     /// <summary>
     /// Raised after the server is initialized and all users loaded but before the main processing loop has started.
@@ -40,8 +40,13 @@ public interface IServer
     /// <summary>
     /// Stops the server main processing loop and message dispatcher.
     /// </summary>
-    /// <returns></returns>
     void Stop();
+
+    /// <summary>
+    /// Stops the server main processing loop and message dispatcher asynchronously.
+    /// </summary>
+    /// <returns>A task that completes when the background loops have stopped.</returns>
+    Task StopAsync();
 
     /// <summary>
     /// Returns true if the main processing loop and message dispatcher have been started.

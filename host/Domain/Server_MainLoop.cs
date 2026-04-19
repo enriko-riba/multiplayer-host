@@ -13,10 +13,13 @@ using Microsoft.Extensions.Logging;
 /// </summary>
 public partial class Server
 {
+    private static readonly EventId TurnDiagnosticsEventId = new(1100, nameof(TurnDiagnosticsEventId));
+    private const int TurnDiagnosticsInterval = 100;
+
     /// <summary>
     /// Main server loop, runs until the stop request
     /// </summary>
-    private async Task MainLoop()
+    private async Task MainLoop(CancellationToken cancellationToken)
     {
         Thread.CurrentThread.Name = nameof(MainLoop);
         logger.LogInformation(nameof(MainLoop) + " started. Tick duration: {TickDuration}", Context.TurnTimeMillis);
@@ -25,29 +28,49 @@ public partial class Server
         sw.Start();
         long tickEnd = sw.ElapsedMilliseconds;
 
-        while (IsRunning)
+        while (!cancellationToken.IsCancellationRequested)
         {
-            tickCounter++;
+            uint currentTick = unchecked((uint)Interlocked.Increment(ref tickCounter));
             var tickStart = sw.ElapsedMilliseconds;
             var elapsedMilliseconds = (int)(tickStart - tickEnd);
 
             try
             {
                 requestBuffer.SwapBuffers();
-                await context.TurnProcessor.OnTurnStart(tickCounter, elapsedMilliseconds);
+                await context.TurnProcessor.OnTurnStart(currentTick, elapsedMilliseconds);
                 ProcessClientMessages();
                 await ProcessAllUsers(elapsedMilliseconds);
                 await context.TurnProcessor.OnTurnComplete();
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "error while processing turn {TickCounter}", tickCounter);
+                logger.LogError(ex, "error while processing turn {TickCounter}", currentTick);
             }
 
             tickEnd = sw.ElapsedMilliseconds;
             var duration = (int)(tickEnd - tickStart);
             var sleepTimeMillis = Math.Max(Context.TurnTimeMillis - duration, 1);
-            await Task.Delay(sleepTimeMillis);
+
+            if (currentTick % TurnDiagnosticsInterval == 0)
+            {
+                logger.LogDebug(
+                    TurnDiagnosticsEventId,
+                    "Turn {TickCounter} completed. DurationMs={TurnDurationMs}, SleepMs={SleepDurationMs}, ActiveUsers={ActiveUsers}, PendingResponses={PendingResponses}",
+                    currentTick,
+                    duration,
+                    sleepTimeMillis,
+                    users.Count,
+                    responseBuffer.Count);
+            }
+
+            try
+            {
+                await Task.Delay(sleepTimeMillis, cancellationToken);
+            }
+            catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+            {
+                break;
+            }
         }
         logger.LogWarning(nameof(MainLoop) + " ended");
     }
@@ -64,7 +87,11 @@ public partial class Server
                 if (users.TryGetValue(key, out var user))
                 {
                     await context.TurnProcessor.ProcessUserTurn(user, elapsedMilliseconds);
-                    if (ShouldSaveUser(user)) await context.Repository.SaveUserAsync(user);
+                    if (ShouldSaveUser(user))
+                    {
+                        await context.Repository.SaveUserAsync(user);
+                        RecordUserPersisted(user);
+                    }
                 }
                 else
                 {
@@ -89,6 +116,7 @@ public partial class Server
             if (users.TryGetValue(msg.UserId, out var user))
             {
                 context.TurnProcessor.ProcessClientMessage(user, in msg);
+                RecordClientMessageProcessed();
             }
             else
             {
