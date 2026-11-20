@@ -44,7 +44,12 @@ public class ServerObservabilityTests
 
         await server.Start();
         server.CreateServerMessage(5, 7, Messages.TargetKind.TargetList, "payload");
-        await WaitForConditionAsync(() => logger.Entries.Any(entry => entry.EventId.Id == 1002));
+        await WaitForConditionAsync(() =>
+        {
+            var entries = logger.Entries;
+            return entries.Any(entry => entry.EventId.Id == 1002 && entry.Message.Contains("Persisted user 7", StringComparison.Ordinal))
+                && entries.Any(entry => entry.EventId.Id == 1200 && entry.Message.Contains("Dispatcher wake-up.", StringComparison.Ordinal));
+        });
         await server.StopAsync();
 
         Assert.Contains(logger.Entries, entry => entry.EventId.Id == 1002 && entry.Message.Contains("Persisted user 7", StringComparison.Ordinal));
@@ -76,10 +81,20 @@ public class ServerObservabilityTests
 
     private sealed class CapturingLogger<T> : ILogger<T>
     {
+        private readonly object syncRoot = new();
         private readonly List<LogEntry> entries = [];
         private readonly Stack<IDictionary<string, object?>> scopes = new();
 
-        public IReadOnlyList<LogEntry> Entries => entries;
+        public IReadOnlyList<LogEntry> Entries
+        {
+            get
+            {
+                lock (syncRoot)
+                {
+                    return entries.ToArray();
+                }
+            }
+        }
 
         public IDisposable? BeginScope<TState>(TState state) where TState : notnull
         {
@@ -92,30 +107,38 @@ public class ServerObservabilityTests
                 }
             }
 
-            scopes.Push(scope);
-            return new ScopeHandle(scopes);
+            lock (syncRoot)
+            {
+                scopes.Push(scope);
+            }
+
+            return new ScopeHandle(syncRoot, scopes);
         }
 
         public bool IsEnabled(LogLevel logLevel) => true;
 
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
         {
-            entries.Add(new LogEntry(
-                logLevel,
-                eventId,
-                formatter(state, exception),
-                scopes.Count > 0 ? new Dictionary<string, object?>(scopes.Peek()) : new Dictionary<string, object?>()));
+            var message = formatter(state, exception);
+            lock (syncRoot)
+            {
+                var scope = scopes.Count > 0 ? new Dictionary<string, object?>(scopes.Peek()) : new Dictionary<string, object?>();
+                entries.Add(new LogEntry(logLevel, eventId, message, scope));
+            }
         }
 
         public sealed record LogEntry(LogLevel LogLevel, EventId EventId, string Message, IReadOnlyDictionary<string, object?> Scope);
 
-        private sealed class ScopeHandle(Stack<IDictionary<string, object?>> scopes) : IDisposable
+        private sealed class ScopeHandle(object syncRoot, Stack<IDictionary<string, object?>> scopes) : IDisposable
         {
             public void Dispose()
             {
-                if (scopes.Count > 0)
+                lock (syncRoot)
                 {
-                    scopes.Pop();
+                    if (scopes.Count > 0)
+                    {
+                        scopes.Pop();
+                    }
                 }
             }
         }
