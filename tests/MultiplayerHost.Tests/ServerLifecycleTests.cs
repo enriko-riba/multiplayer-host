@@ -132,7 +132,7 @@ public class ServerLifecycleTests
         var server = CreateConfiguredServer(repository, new FakeConnectionManager(), new TrackingTurnProcessor(), 10);
 
         await server.Start();
-        await Task.Delay(50);
+        await Task.Delay(50, TestContext.Current.CancellationToken);
         await server.StopAsync();
 
         Assert.DoesNotContain(repository.SavedUsers, user => user.Id == 10);

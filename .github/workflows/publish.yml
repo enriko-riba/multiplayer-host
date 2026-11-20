@@ -20,10 +20,10 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup .NET 10
+      - name: Setup .NET 11
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 10.0.x
+          dotnet-version: 11.0.x
 
       - name: Determine package version
         id: version
@@ -50,6 +50,8 @@ jobs:
 
       - name: Test host project
         run: dotnet test tests/MultiplayerHost.Tests/MultiplayerHost.Tests.csproj --configuration Release --verbosity normal
+        env:
+          DOTNET_TEST_RUNNER: Microsoft.Testing.Platform
 
       - name: Pack host project
         run: dotnet pack host/Host.csproj --output nuget-packages --configuration Release --no-build -p:PackageVersion=${{ steps.version.outputs.package_version }}
