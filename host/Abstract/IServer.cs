@@ -60,6 +60,21 @@ public interface IServer
     void AddUser(User user);
 
     /// <summary>
+    /// Atomically replaces an offline registered user with a fresh instance having the same ID.
+    /// Does not save or delete persisted data and does not raise connection events.
+    /// </summary>
+    /// <remarks>
+    /// Call from the game loop while preventing connections for this user. Persist the replacement
+    /// first when a failed save must leave the current live user intact.
+    /// </remarks>
+    /// <param name="current">The currently registered user instance, which must be offline.</param>
+    /// <param name="replacement">The new offline instance with the same user ID.</param>
+    /// <exception cref="ArgumentNullException">Either instance is null.</exception>
+    /// <exception cref="ArgumentException">The instances have different IDs.</exception>
+    /// <exception cref="InvalidOperationException">Either instance is online, or the current user is no longer registered.</exception>
+    void ReplaceUser(User current, User replacement);
+
+    /// <summary>
     /// Removes the user instance.
     /// </summary>
     /// <param name="user"></param>

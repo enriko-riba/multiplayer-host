@@ -52,11 +52,26 @@ The server uses the `ITurnProcessor` interface to invoke game specific logic. Th
 - `ITurnProcessor` callbacks run on the server background loop, so implementations should avoid blocking work and keep their own shared state thread-safe.
 - Outbound server messages are timestamped with UTC ticks, and dispatcher shutdown drains queued outbound messages before the stop operation completes.
 - Dirty users are persisted on the host save interval (currently 5 seconds) rather than on every turn.
+- To reset game progress, create a fresh user with the same ID, persist it, then call `ReplaceUser(current, replacement)` from the game loop while blocking connections for that user. Both instances must be offline. Replacement updates the in-memory registration atomically and never saves or deletes persisted data; `RemoveUser` still deletes persisted data.
 
 ## Message contracts
 - `ClientMessage` and `ServerMessage` payloads are owned by the game implementation and should be treated as non-null application data.
 - `ServerMessage.Targets` is interpreted together with `TargetKind`; use an empty target array when broadcasting to all users.
 - Message timestamps should use UTC-based values when the game implementation sets them.
+
+## Package versioning and releases
+
+`host/Host.csproj` defines the version used by local builds. The NuGet publishing
+workflow runs on tags matching `v*.*.*` and derives the release version by removing
+the leading `v`. It passes that version to the build, tests, and pack steps so the
+assembly and NuGet package have matching versions. `GitVersion.yml` is not used by
+the current build or publishing workflows.
+
+For a release, update the project version, run the host tests, and commit the
+changes. Push a matching version tag (for example, `v1.5.4`) on that commit. The
+`Publish to NuGet` workflow tests the tagged source and publishes using NuGet
+trusted publishing in the `publish.yml` GitHub environment. A manual workflow
+dispatch must also target a version tag.
 
 # Quickstart
 1. create a game specific user entity inheriting from `MultiplayerHost.Domain.User`

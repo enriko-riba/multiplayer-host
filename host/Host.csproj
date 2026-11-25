@@ -3,6 +3,7 @@
         <TargetFramework>net11.0</TargetFramework>
         <RootNamespace>MultiplayerHost</RootNamespace>
         <Nullable>enable</Nullable>
+        <Version>1.5.4</Version>
 
         <!-- NuGet Package Properties -->
         <PackageId>MultiplayerHost</PackageId>
