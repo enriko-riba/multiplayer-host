@@ -132,16 +132,8 @@ invoked by the server component.</p>
 <li>Message timestamps should use UTC-based values when the game implementation sets them.</li>
 </ul>
 <h2 id="package-versioning-and-releases">Package versioning and releases</h2>
-<p><code>host/Host.csproj</code> defines the version used by local builds. The NuGet publishing
-workflow runs on tags matching <code>v*.*.*</code> and derives the release version by removing
-the leading <code>v</code>. It passes that version to the build, tests, and pack steps so the
-assembly and NuGet package have matching versions. <code>GitVersion.yml</code> is not used by
-the current build or publishing workflows.</p>
-<p>For a release, update the project version, run the host tests, and commit the
-changes. Push a matching version tag (for example, <code>v1.5.4</code>) on that commit. The
-<code>Publish to NuGet</code> workflow tests the tagged source and publishes using NuGet
-trusted publishing in the <code>publish.yml</code> GitHub environment. A manual workflow
-dispatch must also target a version tag.</p>
+<p>See <a href="publishing.html">publishing.md</a> for versioning, validation, protected-branch
+merging, release tags, NuGet trusted publishing, and package restore verification.</p>
 <h1 id="quickstart">Quickstart</h1>
 <ol>
 <li>create a game specific user entity inheriting from <code>MultiplayerHost.Domain.User</code></li>
@@ -190,7 +182,7 @@ context.Configure(repository, connMngr, turnProcessor, turnTimeMillis: 50);
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/enriko-riba/multiplayer-host/blob/main/README.md/#L1" class="contribution-link">Edit this page</a>
+                    <a href="https://github.com/enriko-riba/multiplayer-host/blob/75/merge/README.md/#L1" class="contribution-link">Edit this page</a>
                   </li>
                 </ul>
               </div>
