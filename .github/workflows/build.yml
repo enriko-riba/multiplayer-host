@@ -13,10 +13,10 @@ jobs:
     steps:
 
     - name: Git checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v7.0.1
 
     - name: Install .NET 11
-      uses: actions/setup-dotnet@v4
+      uses: actions/setup-dotnet@v6.1.0
       with:
         dotnet-version: 11.0.x
 

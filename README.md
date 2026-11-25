@@ -61,17 +61,8 @@ The server uses the `ITurnProcessor` interface to invoke game specific logic. Th
 
 ## Package versioning and releases
 
-`host/Host.csproj` defines the version used by local builds. The NuGet publishing
-workflow runs on tags matching `v*.*.*` and derives the release version by removing
-the leading `v`. It passes that version to the build, tests, and pack steps so the
-assembly and NuGet package have matching versions. `GitVersion.yml` is not used by
-the current build or publishing workflows.
-
-For a release, update the project version, run the host tests, and commit the
-changes. Push a matching version tag (for example, `v1.5.4`) on that commit. The
-`Publish to NuGet` workflow tests the tagged source and publishes using NuGet
-trusted publishing in the `publish.yml` GitHub environment. A manual workflow
-dispatch must also target a version tag.
+See [publishing.md](publishing.md) for versioning, validation, protected-branch
+merging, release tags, NuGet trusted publishing, and package restore verification.
 
 # Quickstart
 1. create a game specific user entity inheriting from `MultiplayerHost.Domain.User`
