@@ -213,6 +213,20 @@ public partial class Server : IServer
     }
 
     /// <inheritdoc />
+    public void ReplaceUser(User current, User replacement)
+    {
+        ArgumentNullException.ThrowIfNull(current);
+        ArgumentNullException.ThrowIfNull(replacement);
+        if (current.Id != replacement.Id)
+            throw new ArgumentException("The replacement must have the same user ID.", nameof(replacement));
+        if (current.IsOnlineSince.HasValue || replacement.IsOnlineSince.HasValue)
+            throw new InvalidOperationException("Both user instances must be offline before replacement.");
+        if (!users.TryUpdate(current.Id, replacement, current))
+            throw new InvalidOperationException("The current user instance is no longer registered.");
+        logger.LogInformation("Replaced user {UserId} without deleting persisted data.", current.Id);
+    }
+
+    /// <inheritdoc />
     public void RemoveUser(User user)
     {
         logger.LogWarning("{@User}", user);

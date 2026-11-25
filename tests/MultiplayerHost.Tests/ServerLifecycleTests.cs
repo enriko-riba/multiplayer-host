@@ -14,6 +14,81 @@ using Xunit;
 public class ServerLifecycleTests
 {
     [Fact]
+    public void ReplaceUser_InstallsFreshInstanceWithoutSavingOrDeletingData()
+    {
+        var repository = new FakeRepository();
+        var server = CreateConfiguredServer(repository, new FakeConnectionManager(), new TrackingTurnProcessor(), 10);
+        var current = new TestUser { Id = 42 };
+        var replacement = new TestUser { Id = 42 };
+        server.AddUser(current);
+
+        server.ReplaceUser(current, replacement);
+
+        Assert.Same(replacement, server.GetUserById(42));
+        Assert.Same(replacement, Assert.Single(server.Users));
+        Assert.Empty(repository.DeletedUsers);
+        Assert.Empty(repository.SavedUsers);
+    }
+
+    [Fact]
+    public void ReplaceUser_RejectsStaleOrMissingInstanceWithoutOverwritingRegisteredUser()
+    {
+        var server = new Server(NullLogger<Server>.Instance);
+        var current = new TestUser { Id = 42 };
+        var replacement = new TestUser { Id = 42 };
+        Assert.Throws<InvalidOperationException>(() => server.ReplaceUser(current, replacement));
+        Assert.Empty(server.Users);
+        server.AddUser(current);
+        server.ReplaceUser(current, replacement);
+
+        Assert.Throws<InvalidOperationException>(() => server.ReplaceUser(current, new TestUser { Id = 42 }));
+        Assert.Same(replacement, server.GetUserById(42));
+    }
+
+    [Fact]
+    public void ReplaceUser_ValidatesIdentityAndOfflineState()
+    {
+        var server = new Server(NullLogger<Server>.Instance);
+        var current = new TestUser { Id = 42 };
+        server.AddUser(current);
+        Assert.Throws<ArgumentNullException>(() => server.ReplaceUser(null!, current));
+        Assert.Throws<ArgumentNullException>(() => server.ReplaceUser(current, null!));
+        Assert.Throws<ArgumentException>(() => server.ReplaceUser(current, new TestUser { Id = 43 }));
+        Assert.Throws<InvalidOperationException>(() => server.ReplaceUser(current,
+            new TestUser { Id = 42, IsOnlineSince = DateTime.UtcNow }));
+        current.IsOnlineSince = DateTime.UtcNow;
+        Assert.Throws<InvalidOperationException>(() => server.ReplaceUser(current, new TestUser { Id = 42 }));
+        Assert.Same(current, Assert.Single(server.Users));
+    }
+
+    [Fact]
+    public async Task ReplaceUser_FromTurnStart_ProcessesAndPersistsOnlyTheReplacement()
+    {
+        var repository = new FakeRepository();
+        var current = new TestUser { Id = 42, IsDirty = true, LastSaved = DateTime.UtcNow.AddMinutes(-1) };
+        var replacement = new TestUser { Id = 42, IsDirty = true, LastSaved = DateTime.UtcNow.AddMinutes(-1) };
+        repository.UsersToReturn.Add(current);
+        var processor = new TrackingTurnProcessor();
+        var server = CreateConfiguredServer(repository, new FakeConnectionManager(), processor, 10);
+        processor.OnTurnStartAction = () =>
+        {
+            if (ReferenceEquals(server.GetUserById(42), current)) server.ReplaceUser(current, replacement);
+        };
+
+        await server.Start();
+        try
+        {
+            await WaitForConditionAsync(() => repository.SavedUsers.Contains(replacement));
+        }
+        finally { await server.StopAsync(); }
+
+        Assert.Contains(replacement, processor.ProcessedUsers);
+        Assert.DoesNotContain(current, processor.ProcessedUsers);
+        Assert.DoesNotContain(current, repository.SavedUsers);
+        Assert.Empty(repository.DeletedUsers);
+    }
+
+    [Fact]
     public async Task StartAndStopAsync_ManageLifecycleAndSubscriptions()
     {
         var repository = new FakeRepository();
@@ -271,6 +346,8 @@ public class ServerLifecycleTests
 
     private sealed class TrackingTurnProcessor : ITurnProcessor
     {
+        public Action? OnTurnStartAction { get; set; }
+        public ConcurrentBag<User> ProcessedUsers { get; } = [];
         public int OnTurnStartCalls { get; private set; }
         public int OnTurnCompleteCalls { get; private set; }
         public int ProcessUserTurnCalls { get; private set; }
@@ -279,6 +356,7 @@ public class ServerLifecycleTests
         public Task OnTurnStart(uint tick, int elapsedMilliseconds)
         {
             OnTurnStartCalls++;
+            OnTurnStartAction?.Invoke();
             return Task.CompletedTask;
         }
 
@@ -290,6 +368,7 @@ public class ServerLifecycleTests
         public Task ProcessUserTurn(User user, int elapsedMilliseconds)
         {
             ProcessUserTurnCalls++;
+            ProcessedUsers.Add(user);
             return Task.CompletedTask;
         }
 

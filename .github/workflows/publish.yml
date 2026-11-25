@@ -47,15 +47,15 @@ jobs:
         run: dotnet restore host/Host.csproj
 
       - name: Build host project
-        run: dotnet build host/Host.csproj --configuration Release --no-restore
+        run: dotnet build host/Host.csproj --configuration Release --no-restore -p:Version=${{ steps.version.outputs.package_version }}
 
       - name: Test host project
-        run: dotnet test tests/MultiplayerHost.Tests/MultiplayerHost.Tests.csproj --configuration Release --verbosity normal
+        run: dotnet test tests/MultiplayerHost.Tests/MultiplayerHost.Tests.csproj --configuration Release --verbosity normal -p:Version=${{ steps.version.outputs.package_version }}
         env:
           DOTNET_TEST_RUNNER: Microsoft.Testing.Platform
 
       - name: Pack host project
-        run: dotnet pack host/Host.csproj --output nuget-packages --configuration Release --no-build -p:PackageVersion=${{ steps.version.outputs.package_version }}
+        run: dotnet pack host/Host.csproj --output nuget-packages --configuration Release --no-build -p:Version=${{ steps.version.outputs.package_version }}
 
       - name: NuGet login
         id: nuget-login
